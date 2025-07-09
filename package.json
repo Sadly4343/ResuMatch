@@ -1,0 +1,25 @@
+{
+  "name": "resumatch",
+  "version": "1.0.0",
+  "description": "AI-powered resume analysis and job matching application",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
+    "client": "cd client && npm start",
+    "install-client": "cd client && npm install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sadly4343/ResuMatch.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Sadly4343/ResuMatch/issues"
+  },
+  "homepage": "https://github.com/Sadly4343/ResuMatch#readme"
+}
