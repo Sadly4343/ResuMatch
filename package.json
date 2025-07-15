@@ -4,8 +4,8 @@
   "description": "AI-powered resume analysis and job matching application",
   "main": "server/server.js",
   "scripts": {
-    "start": "node server/server.js",
-    "dev": "nodemon server/server.js",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
     "client": "cd client && npm start",
     "install-client": "cd client && npm install",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,5 +21,18 @@
   "bugs": {
     "url": "https://github.com/Sadly4343/ResuMatch/issues"
   },
-  "homepage": "https://github.com/Sadly4343/ResuMatch#readme"
+  "homepage": "https://github.com/Sadly4343/ResuMatch#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.3",
+    "multer": "^2.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
 }
