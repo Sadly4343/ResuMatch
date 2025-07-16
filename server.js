@@ -1,10 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+<<<<<<< HEAD
 const { initDb, getDatabase } = require('./data/database')
 const dotenv = require('dotenv');
 const mongodb = require('./data/database')
 
+=======
+const mongodb = require('./data/database')
+const dotenv = require('dotenv');
+>>>>>>> 1cf928db1884f390f94cad8427243a24657c7d0c
 
 dotenv.config();
 
@@ -28,7 +33,19 @@ app.get('/', (req, res) => {
     });
 })
 
+<<<<<<< HEAD
 initDb((err, db ) => {
+=======
+app.get('/api/users', (req, res) => {
+    res.json({ users: [] });
+})
+
+
+
+
+
+mongodb.intDb((err) => {
+>>>>>>> 1cf928db1884f390f94cad8427243a24657c7d0c
     if (err) {
         console.log(err);
     }
@@ -37,6 +54,7 @@ initDb((err, db ) => {
             console.log(`Running on the port ${PORT}`);
         })
     }
+<<<<<<< HEAD
 })
 
 app.get('/api/users', async (req, res) => {
@@ -60,3 +78,6 @@ app.get('/api/users', async (req, res) => {
 
 
 
+=======
+})
+>>>>>>> 1cf928db1884f390f94cad8427243a24657c7d0c
