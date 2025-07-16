@@ -1,22 +1,22 @@
 const dotenv = require('dotenv');
-const { CancellationToken } = require('mongodb');
+const { MongoClient} = require('mongodb');
 
 dotenv.config();
 
-const MongoClient = require('mongodb').MongoClient;
 
-let database;
+let db;
+let client;
 
-const intDb = (callback) => {
-    if (database) {
+const initDb = (callback) => {
+    if (db) {
         console.log('Db is already init');
-    return callback(null, database);    }
+    return callback(null, db)   }
 
     MongoClient.connect(process.env.MONGODB_URI)
-        .then((client) => {
-            database = client;
-            callback(null, database);
-
+        .then((clientCreation) => {
+            client = clientCreation;
+            db = client.db(process.env.MONGODB_DB_NAME || 'ResuMatch');
+            callback(null, db);
         })
         .catch((err) => {
             callback(err);
@@ -24,13 +24,13 @@ const intDb = (callback) => {
 }
 
 const getDatabase = () => {
-    if (!database) {
+    if (!db) {
         throw Error('database is not found')
 
 
     }
-    return database;
+    return db;
 }
 
 module.exports = {
-    intDb, getDatabase}
+    initDb, getDatabase}

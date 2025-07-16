@@ -1,8 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const mongodb = require('./data/database')
+const { initDb, getDatabase } = require('./data/database')
 const dotenv = require('dotenv');
+const mongodb = require('./data/database')
+
 
 dotenv.config();
 
@@ -26,15 +28,7 @@ app.get('/', (req, res) => {
     });
 })
 
-app.get('/api/users', (req, res) => {
-    res.json({ users: [] });
-})
-
-
-
-
-
-mongodb.intDb((err) => {
+initDb((err, db ) => {
     if (err) {
         console.log(err);
     }
@@ -44,3 +38,25 @@ mongodb.intDb((err) => {
         })
     }
 })
+
+app.get('/api/users', async (req, res) => {
+  try {
+    const db = getDatabase();
+    console.log('DB Name:', db.databaseName);
+    const collections = await db.listCollections().toArray();
+    console.log('Collections in DB:', collections.map(c => c.name));
+    
+    const users = await db.collection('users').find().toArray();
+    console.log('Users found:', users.length);
+    res.json(users);
+  } catch (err) {
+    console.error('Failed to retrieve the Users', err);
+    res.status(500).json({ message: 'Server Errors '});
+  }
+});
+
+
+
+
+
+
