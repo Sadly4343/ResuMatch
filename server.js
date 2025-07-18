@@ -9,21 +9,21 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// View engine setup (optional, if using EJS)
-app.set('view engine', 'ejs');
-app.set('views', './views');
-
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
 
-// Root route (renders a view)
+// Root route (API info)
 app.get('/', (req, res) => {
-  res.render('index', {
-    title: 'ResuMatch - AI Resume Web App',
-    user: null,
+  res.json({
+    description: 'Backend API for ResuMatch - AI Resume Web App',
+    frontend: 'React app runs on port 3000',
+    endpoints: {
+      users: '/api/users',
+      resumes: '/api/resumes',
+  
+    }
   });
 });
 
@@ -31,15 +31,21 @@ app.get('/', (req, res) => {
 app.get('/api/users', async (req, res) => {
   try {
     const db = getDatabase();
-    console.log('DB Name:', db.databaseName);
-    const collections = await db.listCollections().toArray();
-    console.log('Collections in DB:', collections.map(c => c.name));
-
     const users = await db.collection('users').find().toArray();
-    console.log('Users found:', users.length);
     res.json(users);
   } catch (err) {
     console.error('Failed to retrieve the Users', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+app.get('/api/resumes', async (req, res) => {
+  try {
+    const db = getDatabase();
+    const resumes = await db.collection('resumes').find().toArray();
+    res.json(resumes);
+  } catch (err) {
+      console.error('Failed to retrieve the Resumes', err); 
     res.status(500).json({ message: 'Server Error' });
   }
 });
