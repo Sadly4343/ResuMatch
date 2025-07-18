@@ -15,7 +15,8 @@ const initDb = (callback) => {
     MongoClient.connect(process.env.MONGODB_URI)
         .then((clientConnection) => {
             client = clientConnection;
-            db = client.db('resumatch'); // Specify your database name
+            // Use the default database from the URI or specify a database name
+            db = client.db(); // This will use the default database
             console.log('Database connected successfully!');
             callback(null, db);
         })
