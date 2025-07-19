@@ -14,5 +14,3 @@ This will implement the following technologies:
 - MongoDB Database
 - Mongoose
 - 
-
-- Ernest Nkansah kyei(week03)

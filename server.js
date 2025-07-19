@@ -1,62 +1,47 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { initDb } = require('./data/database');
 const dotenv = require('dotenv');
-const { initDb, getDatabase } = require('./data/database');
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Root route (API info)
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Server is running' });
+});
+
+// API Routes
+const authRoutes = require('./server/routes/auth');
+const applicationRoutes = require('./server/routes/applications');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/applications', applicationRoutes);
+
+// Default route
 app.get('/', (req, res) => {
-  res.json({
-    description: 'Backend API for ResuMatch - AI Resume Web App',
-    frontend: 'React app runs on port 3000',
-    endpoints: {
-      users: '/api/users',
-      resumes: '/api/resumes',
-  
-    }
+  res.json({ 
+    message: 'ResuMatch API Server',
+    status: 'running',
+    version: '1.0.0'
   });
 });
 
-// API route to fetch users from MongoDB
-app.get('/api/users', async (req, res) => {
-  try {
-    const db = getDatabase();
-    const users = await db.collection('users').find().toArray();
-    res.json(users);
-  } catch (err) {
-    console.error('Failed to retrieve the Users', err);
-    res.status(500).json({ message: 'Server Error' });
-  }
-});
-
-app.get('/api/resumes', async (req, res) => {
-  try {
-    const db = getDatabase();
-    const resumes = await db.collection('resumes').find().toArray();
-    res.json(resumes);
-  } catch (err) {
-      console.error('Failed to retrieve the Resumes', err); 
-    res.status(500).json({ message: 'Server Error' });
-  }
-});
-
-// Initialize DB and start server
-initDb((err) => {
+// Initialize database and start server
+initDb((err, db) => {
   if (err) {
     console.error('DB Initialization Failed:', err);
-  } else {
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
   }
+  
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 });
