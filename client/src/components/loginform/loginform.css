@@ -1,0 +1,21 @@
+body {
+    background-color: red;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    border-radius: 10px;
+    background-color: whitesmoke;
+    box-shadow: 0 2px 10px rgba(red, green, blue, 0.1);
+    min-width: 300px;
+}
+
+.login-container {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    background-color: wheat;
+}

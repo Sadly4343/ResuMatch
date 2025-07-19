@@ -5,8 +5,8 @@ import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import LoginPage from './pages/login.js';
-import HomePage from './pages/home.js';
+import LoginPage from './pages/login.jsx';
+import HomePage from './pages/home.jsx';
 
 function App() {
   return (
