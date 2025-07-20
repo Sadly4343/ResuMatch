@@ -51,8 +51,8 @@ export default function LoginPage() {
         apiService.setToken(response.token);
         router.push('/dashboard');
       }
-    } catch (error: any) {
-      setError(error.message || 'An error occurred');
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message :'An error occurred');
     } finally {
       setLoading(false);
     }
