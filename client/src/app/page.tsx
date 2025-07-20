@@ -77,11 +77,11 @@ export default function HomePage() {
         <h2 style={{ textAlign: 'center', fontSize: '2rem', fontWeight: 700, marginBottom: '3rem', color: '#222' }}>What Our Users Say</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', maxWidth: '800px', margin: '0 auto' }}>
           <div style={{ background: '#e3f2fd', padding: '2rem', borderRadius: '12px' }}>
-            <p style={{ fontSize: '1.1rem', marginBottom: '1rem', fontStyle: 'italic' }}>"ResuMatch transformed my job search! The AI analysis is a game-changer."</p>
+            <p style={{ fontSize: '1.1rem', marginBottom: '1rem', fontStyle: 'italic' }}>&quot;ResuMatch transformed my job search! The AI analysis is a game-changer.</p>
             <p style={{ fontWeight: 600, color: '#2196f3' }}>- Jane D.</p>
           </div>
           <div style={{ background: '#e3f2fd', padding: '2rem', borderRadius: '12px' }}>
-            <p style={{ fontSize: '1.1rem', marginBottom: '1rem', fontStyle: 'italic' }}>"Finally, a tool that keeps all my applications organized. Highly recommend!"</p>
+            <p style={{ fontSize: '1.1rem', marginBottom: '1rem', fontStyle: 'italic' }}>&quot;Finally, a tool that keeps all my applications organized. Highly recommend!</p>
             <p style={{ fontWeight: 600, color: '#2196f3' }}>- Mark S.</p>
           </div>
         </div>
