@@ -19,7 +19,7 @@ export default function DashboardPage() {
       </aside>
       <main style={{ flex: 1, padding: '2.5rem 3rem' }}>
         <div style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>Welcome back, John Doe!</div>
-        <div style={{ color: '#666', marginBottom: 32 }}>Here's a quick overview of your job search progress.</div>
+        <div style={{ color: '#666', marginBottom: 32 }}>Here&apos;s a quick overview of your job search progress.</div>
         <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start' }}>
           <section style={{ flex: 2 }}>
             <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 12 }}>Your Applications</div>
