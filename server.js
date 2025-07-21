@@ -14,6 +14,10 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// View engine setup
+app.set('view engine', 'ejs');
+app.set('views', './views');
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
@@ -22,9 +26,11 @@ app.get('/api/health', (req, res) => {
 // API Routes
 const authRoutes = require('./server/routes/auth');
 const applicationRoutes = require('./server/routes/applications');
+const toolsRoutes = require('./server/routes/tools');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/tools', toolsRoutes);
 
 // Default route
 app.get('/', (req, res) => {
