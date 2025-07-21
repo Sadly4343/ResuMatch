@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tools - ResuMatch</title>
+</head>
+<body>
+  <h1>Career Tools</h1>
+
+  <section>
+    <h2>Resume Analyzer (Mock)</h2>
+    <form method="POST" action="/tools/analyze">
+      <textarea name="resume" placeholder="Paste resume text here" rows="5" cols="60"></textarea><br>
+      <textarea name="job" placeholder="Paste job description here" rows="5" cols="60"></textarea><br>
+      <button type="submit">Analyze</button>
+    </form>
+
+    <% if (result) { %>
+      <p>Match Score: <%= result.score %>%</p>
+      <% if (result.missing.length > 0) { %>
+        <details>
+          <summary>Missing Keywords</summary>
+          <ul>
+            <% result.missing.forEach(word => { %>
+              <li><%= word %></li>
+            <% }); %>
+          </ul>
+        </details>
+      <% } %>
+    <% } %>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>Cover Letter Generator</h2>
+    <form method="POST" action="/tools/coverletter">
+      <input name="name" placeholder="Your Name" /><br>
+      <input name="role" placeholder="Role" /><br>
+      <input name="company" placeholder="Company" /><br>
+      <textarea name="intro" placeholder="Optional custom intro..." rows="3" cols="60"></textarea><br>
+      <button type="submit">Generate</button>
+    </form>
+
+    <% if (letter) { %>
+      <h3>Generated Letter:</h3>
+      <pre><%= letter %></pre>
+    <% } %>
+  </section>
+</body>
+</html>
