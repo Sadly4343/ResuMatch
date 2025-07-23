@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { initDb } = require('./data/database');
 const dotenv = require('dotenv');
@@ -7,12 +8,26 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3003;
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const connectMongoose = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('Mongoose Connected')
+
+  }catch (error) {
+    console.error('Mongoose not connected');
+  }
+
+}
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -27,6 +42,7 @@ app.get('/api/health', (req, res) => {
 const authRoutes = require('./server/routes/auth');
 const applicationRoutes = require('./server/routes/applications');
 const toolsRoutes = require('./server/routes/tools');
+const { trustedSymbol } = require('mongoose/lib/helpers/query/trusted');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/applications', applicationRoutes);
@@ -41,13 +57,17 @@ app.get('/', (req, res) => {
   });
 });
 
-// Initialize database and start server
 initDb((err, db) => {
   if (err) {
-    console.error('DB Initialization Failed:', err);
+    console.log('Native MongoDb error')
+  } else {
+    console.log('Native connected')
   }
-  
+
+  connectMongoose();
+
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-});
+    console.log(`Server running`)
+  })
+})
+
