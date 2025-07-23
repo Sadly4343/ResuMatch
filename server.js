@@ -46,7 +46,7 @@ const { trustedSymbol } = require('mongoose/lib/helpers/query/trusted');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/applications', applicationRoutes);
-app.use('/tools', toolsRoutes);
+app.use('/api/tools', toolsRoutes);
 
 // Default route
 app.get('/', (req, res) => {

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://resumatc3.onrender.com';
+const API_BASE_URL = 'https://resumatc3.onrender.com/api';
 
 class ApiService {
   constructor() {
