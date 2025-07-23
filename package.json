@@ -11,8 +11,6 @@
     "build:server": "echo 'Server does not need building - Node.js runs directly'",
     "client": "cd client && npm start",
     "install-client": "cd client && npm install",
-    "install-all": "npm install && npm run install-client",
-    "postinstall": "npm run install-client",
     "heroku-postbuild": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "echo 'Add linting here if needed'",
