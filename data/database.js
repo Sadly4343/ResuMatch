@@ -12,7 +12,7 @@ const initDb = (callback) => {
     }
 
     // Use a fallback MongoDB URI if the environment variable is not set
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/resumatch';
+    const mongoUri = process.env.MONGODB_URI;
     
     console.log('Attempting to connect to MongoDB...');
     console.log('MongoDB URI:', mongoUri);
