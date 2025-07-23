@@ -66,7 +66,7 @@ export default function LoginPage() {
           </div>
           <button type="submit" style={{ background: '#2196f3', color: '#fff', border: 'none', borderRadius: 8, padding: '12px 24px', fontWeight: 600, fontSize: 16, width: '100%', marginBottom: 16 }}>Login Here</button>
           <div style={{ textAlign: 'center', color: '#666' }}>
-            Don't have an account? <a href="/signup" style={{ color: '#2196f3', textDecoration: 'none' }}>Sign Up Here</a>
+            Don&apos;t have an account? <a href="/signup" style={{ color: '#2196f3', textDecoration: 'none' }}>Sign Up Here</a>
           </div>
         </form>
       </div>
