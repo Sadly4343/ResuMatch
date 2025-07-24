@@ -24,4 +24,4 @@ router.put('/:id', applicationController.updateApplication);
 // Delete application
 router.delete('/:id', applicationController.deleteApplication);
 
-module.exports = router; 
+module.exports = router;

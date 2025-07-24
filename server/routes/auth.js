@@ -12,4 +12,4 @@ router.post('/login', authController.login);
 // Get current user (protected route)
 router.get('/me', auth, authController.getCurrentUser);
 
-module.exports = router; 
+module.exports = router;

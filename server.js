@@ -17,17 +17,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const connectMongoose = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('Mongoose Connected')
-
-  }catch (error) {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('Mongoose Connected');
+  } catch (error) {
     console.error('Mongoose not connected');
   }
-
-}
+};
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -42,15 +37,16 @@ app.get('/api/health', (req, res) => {
 const authRoutes = require('./server/routes/auth');
 const applicationRoutes = require('./server/routes/applications');
 const toolsRoutes = require('./server/routes/tools');
-const { trustedSymbol } = require('mongoose/lib/helpers/query/trusted');
+const resumeRoutes = require('./server/routes/upload');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/tools', toolsRoutes);
+app.use('/api/upload', resumeRoutes);
 
 // Default route
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'ResuMatch API Server',
     status: 'running',
     version: '1.0.0'
@@ -59,15 +55,14 @@ app.get('/', (req, res) => {
 
 initDb((err, db) => {
   if (err) {
-    console.log('Native MongoDb error')
+    console.log('Native MongoDb error');
   } else {
-    console.log('Native connected')
+    console.log('Native connected');
   }
 
   connectMongoose();
 
   app.listen(PORT, () => {
-    console.log(`Server running`)
-  })
-})
-
+    console.log('Server running');
+  });
+});

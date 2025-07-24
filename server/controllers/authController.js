@@ -20,7 +20,7 @@ const register = async (req, res) => {
     }
 
     // Create new user
-     console.log('👤 Creating new user...');
+    console.log('👤 Creating new user...');
     const user = new User({
       name,
       email,
@@ -88,4 +88,4 @@ module.exports = {
   register,
   login,
   getCurrentUser
-}; 
+};
