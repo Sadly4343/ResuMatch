@@ -22,7 +22,8 @@ export default function ResumeUploader({ onUploadSuccess }) {
         setResult(null);
 
         try {
-            const response = await fetch('http://localhost:3003/api/upload', {
+            const apiURL = process.env.NEXT_PUBLIC_API_URL
+            const response = await fetch(`${apiURL}/api/upload`, {
                 method: "POST",
                 body: formData,
             });
