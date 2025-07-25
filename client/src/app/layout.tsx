@@ -31,7 +31,7 @@ export default function RootLayout({
 }}>
   <Link href="/" style={{ fontWeight: 700, fontSize: '1.5rem', textDecoration: 'none', color: '#ffffff' }}>ResuMatch</Link>
   <nav style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-    <Link className="nav-link" href="/login" style={{ textDecoration: 'none', color: '#ffffff', fontWeight: 500 }}>Login</Link>
+    <Link  href="/login" style={{ textDecoration: 'none', color: '#ffffff', fontWeight: 500 }}>Login</Link>
     <Link href="/dashboard" style={{ textDecoration: 'none', color: '#ffffff', fontWeight: 500 }}>Dashboard</Link>
     <Link href="/applications" style={{ textDecoration: 'none', color: '#ffffff', fontWeight: 500 }}>Applications & Resumes</Link>
     <Link href="/signup" style={{
