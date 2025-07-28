@@ -47,9 +47,9 @@ const resumeSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-resumeSchema.pre('save', function(next) {
+resumeSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
-module.exports = mongoose.model('Resume', resumeSchema); 
+module.exports = mongoose.model('Resume', resumeSchema);

@@ -59,9 +59,9 @@ const applicationSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-applicationSchema.pre('save', function(next) {
+applicationSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
-module.exports = mongoose.model('Application', applicationSchema); 
+module.exports = mongoose.model('Application', applicationSchema);

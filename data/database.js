@@ -6,48 +6,29 @@ dotenv.config();
 let database;
 
 const initDb = (callback) => {
-    if (database) {
-        console.log('Db is already initialized');
-        return callback(null, database);
-    }
+    if (db) {
+        console.log('Db is already init');
+    return callback(null, db)   }
 
-    // Use a fallback MongoDB URI if the environment variable is not set
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/resumatch';
-    
-    console.log('Attempting to connect to MongoDB...');
-    console.log('MongoDB URI:', mongoUri);
-    
-    // Check if the URI is valid
-    if (!mongoUri || typeof mongoUri !== 'string') {
-        console.error('Invalid MongoDB URI:', mongoUri);
-        console.log('Starting server without database connection...');
-        return callback(null, null);
-    }
-    
-    MongoClient.connect(mongoUri, {
-        serverSelectionTimeoutMS: 5000, // 5 second timeout
-        connectTimeoutMS: 10000,
-    })
-    .then((client) => {
-        console.log('Successfully connected to MongoDB');
-        database = client.db(process.env.MONGODB_DB_NAME || 'resumatch');
-        callback(null, database);
-    })
-    .catch((error) => {
-        console.error('MongoDB connection failed:', error.message);
-        console.log('Starting server without database connection...');
-        callback(null, null);
-    });
-};
+    MongoClient.connect(process.env.MONGODB_URI)
+        .then((clientCreation) => {
+            client = clientCreation;
+            db = client.db(process.env.MONGODB_DB_NAME || 'ResuMatch');
+            callback(null, db);
+        })
+        .catch((err) => {
+            callback(err);
+        })
+}
 
-const getDb = () => {
-    if (!database) {
-        throw Error('Database not initialized. Call initDb first.');
+const getDatabase = () => {
+    if (!db) {
+        throw Error('database is not found')
+
+
     }
-    return database;
-};
+    return db;
+}
 
 module.exports = {
-    initDb,
-    getDb
-};
+    initDb, getDatabase}

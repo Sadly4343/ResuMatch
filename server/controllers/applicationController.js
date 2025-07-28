@@ -5,7 +5,7 @@ const getUserApplications = async (req, res) => {
   try {
     const applications = await Application.find({ user: req.user._id })
       .sort({ dateApplied: -1 });
-    
+
     res.json(applications);
   } catch (error) {
     console.error('Get applications error:', error);
@@ -145,4 +145,4 @@ module.exports = {
   updateApplication,
   deleteApplication,
   getApplicationStats
-}; 
+};
