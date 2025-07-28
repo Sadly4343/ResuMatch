@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const applicationSchema = new mongoose.Schema({
   user: {
@@ -64,4 +64,5 @@ applicationSchema.pre('save', function (next) {
   next();
 });
 
-module.exports = mongoose.model('Application', applicationSchema);
+export default mongoose.models.Application ||
+  mongoose.model("Application", applicationSchema);

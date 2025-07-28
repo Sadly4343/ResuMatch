@@ -19,7 +19,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     const fileName = `${Date.now()}-${file.originalname}`;
     const params = {
       Bucket: process.env.AWS_BUCKET_NAME,
-      Key: `resumes/${fileName}`,
+      Key: `resumes/${fileName}`,-
       Body: file.buffer,
       ContentType: file.mimetype,
       ACL: 'private'
