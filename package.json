@@ -15,7 +15,7 @@
     "postinstall": "npm run install-client",
     "heroku-postbuild": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "echo 'Add linting here if needed'",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "clean": "rimraf client/build && rimraf node_modules"
   },
   "repository": {
@@ -45,6 +45,7 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "nodemon": "^3.1.10",
-    "rimraf": "^5.0.5"
+    "rimraf": "^5.0.5",
+    "eslint": "^8.57.0"
   }
 }
