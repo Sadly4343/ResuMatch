@@ -38,11 +38,13 @@ app.get('/api/health', (req, res) => {
 const authRoutes = require('./server/routes/auth');
 const applicationRoutes = require('./server/routes/applications');
 const toolsRoutes = require('./server/routes/tools');
+const notificationsRoutes = require('./server/routes/notifications');
 const resumeRoutes = require('./server/routes/upload');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/tools', toolsRoutes);
+app.use('/api/notifications', notificationsRoutes);
 app.use('/api/upload', resumeRoutes);
 
 // Default route
