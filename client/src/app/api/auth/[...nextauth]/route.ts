@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import User from "../../../../server/models/User"
-import connectDB from "../../../../server/lib/mongoose";
+import User from "@/lib/models/User";
+import { connectDB } from "@/lib/mongoose";
 
 interface IUserWithMethods {
     comparePassword: (input: string) => Promise<boolean>;
