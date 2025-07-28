@@ -22,7 +22,6 @@ export default function CalendarPage() {
     type: 'reminder' as CalendarEvent['type']
   });
 
-  // Load events from localStorage on component mount
   useEffect(() => {
     const savedEvents = localStorage.getItem('calendarEvents');
     if (savedEvents) {
@@ -30,7 +29,6 @@ export default function CalendarPage() {
     }
   }, []);
 
-  // Save events to localStorage whenever events change
   useEffect(() => {
     localStorage.setItem('calendarEvents', JSON.stringify(events));
   }, [events]);
@@ -42,7 +40,6 @@ export default function CalendarPage() {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDay = firstDay.getDay();
-    
     return { daysInMonth, startingDay };
   };
 
@@ -102,7 +99,7 @@ export default function CalendarPage() {
           <a href="/tools" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '12px 16px', fontSize: 16, transition: 'background-color 0.2s' }}>Tools</a>
           <a href="/calendar" style={{ fontWeight: 600, color: '#2196f3', textDecoration: 'none', background: '#f0f7ff', borderRadius: 8, padding: '12px 16px', fontSize: 16 }}>Calendar</a>
         </nav>
-        <div style={{ marginTop: 'auto', color: '#888', fontSize: 15, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+        <div style={{ marginTop: 'auto', color: '#888', fontSize: 15, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span>↩️</span> 
           <button
             onClick={() => {
@@ -140,11 +137,8 @@ export default function CalendarPage() {
                 padding: '8px 16px', 
                 fontWeight: 600, 
                 fontSize: 14,
-                cursor: 'pointer',
-                transition: 'background-color 0.2s'
+                cursor: 'pointer'
               }}
-              onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = '#f0f7ff'}
-              onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = '#fff'}
             >
               ← Previous
             </button>
@@ -158,11 +152,8 @@ export default function CalendarPage() {
                 padding: '8px 16px', 
                 fontWeight: 600, 
                 fontSize: 14,
-                cursor: 'pointer',
-                transition: 'background-color 0.2s'
+                cursor: 'pointer'
               }}
-              onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = '#1976d2'}
-              onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = '#2196f3'}
             >
               Today
             </button>
@@ -176,11 +167,8 @@ export default function CalendarPage() {
                 padding: '8px 16px', 
                 fontWeight: 600, 
                 fontSize: 14,
-                cursor: 'pointer',
-                transition: 'background-color 0.2s'
+                cursor: 'pointer'
               }}
-              onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = '#f0f7ff'}
-              onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = '#fff'}
             >
               Next →
             </button>
@@ -213,12 +201,10 @@ export default function CalendarPage() {
                 </div>
               ))}
               
-              {/* Empty cells for days before the first day of the month */}
               {[...Array(startingDay)].map((_, i) => (
                 <div key={`empty-${i}`} style={{ padding: 8 }}></div>
               ))}
               
-              {/* Days of the month */}
               {[...Array(daysInMonth)].map((_, i) => {
                 const day = i + 1;
                 const dayEvents = getEventsForDate(day);
@@ -237,15 +223,12 @@ export default function CalendarPage() {
                       fontSize: 14,
                       cursor: 'pointer',
                       borderRadius: 4,
-                      transition: 'background-color 0.2s',
                       background: isToday ? '#e3f2fd' : 'transparent',
                       border: isToday ? '2px solid #2196f3' : 'none',
                       position: 'relative',
                       minHeight: 40
                     }}
                     onClick={() => handleDateClick(day)}
-                    onMouseOver={(e) => !isToday && (e.target as HTMLDivElement).style.background = '#f0f7ff'}
-                    onMouseOut={(e) => !isToday && (e.target as HTMLDivElement).style.background = 'transparent'}
                   >
                     {day}
                     {dayEvents.length > 0 && (
@@ -355,7 +338,6 @@ export default function CalendarPage() {
         </div>
       </main>
 
-      {/* Add Event Modal */}
       {showAddModal && (
         <div style={{
           position: 'fixed',
