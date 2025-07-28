@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 
 export default function ResumeUploader({ onUploadSuccess }) {
-
-    const [selectedFile, setSelectedFile ] = useState(null);
-    const [loading, setLoading ] = useState(false);
-    const [result, setResult ] = useState(null);
-    const [error, setError ] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [result, setResult] = useState(null);
+    const [error, setError] = useState(null);
+    const [presignedUrl, setPresignedUrl] = useState(null);
 
     async function handleUpload() {
-
         if (!selectedFile) {
             alert("Must select an appropriate file first.");
             return;
@@ -20,10 +19,10 @@ export default function ResumeUploader({ onUploadSuccess }) {
         setLoading(true);
         setError(null);
         setResult(null);
+        setPresignedUrl(null);
 
         try {
-            const apiURL = process.env.NEXT_PUBLIC_API_URL
-            const response = await fetch(`${apiURL}/api/upload`, {
+            const response = await fetch(`/api/upload`, {
                 method: "POST",
                 body: formData,
             });
@@ -37,9 +36,13 @@ export default function ResumeUploader({ onUploadSuccess }) {
             setResult(data);
             onUploadSuccess?.(data);
 
+            // Fetch pre-signed URL for the uploaded file
+            const presignRes = await fetch(`/api/s3/presign?key=${encodeURIComponent(`users/anonymous/resumes/${data.fileName}`)}`);
+            const presignData = await presignRes.json();
+            setPresignedUrl(presignData.url);
+
         } catch (err) {
             setError(err.message);
-
         } finally {
             setLoading(false);
         }
@@ -59,10 +62,14 @@ export default function ResumeUploader({ onUploadSuccess }) {
                     <h4>Upload Success!</h4>
                     <p><strong>File:</strong> {result.fileName}</p>
                     <p>
-                        <strong>URL:</strong>{""}
-                        <a href={result.fileUrl} target="_blank" rel="noopener noreferrer">
-                            {result.fileUrl}
-                        </a>
+                        <strong>URL:</strong>{" "}
+                        {presignedUrl ? (
+                            <a href={presignedUrl} target="_blank" rel="noopener noreferrer">
+                                Download Resume
+                            </a>
+                        ) : (
+                            "Generating link..."
+                        )}
                     </p>
                 </div>
             )}

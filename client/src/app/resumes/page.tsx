@@ -2,6 +2,7 @@
 import React from "react";
 
 import ResumeUploader from "../components/resumeUploader";
+import ResumeList from "../components/resumeRetrieval";
 
 interface UploadResult {
   message: string;
@@ -48,6 +49,7 @@ export default function ResumesPage() {
                 <button style={{ background: 'none', border: 'none', color: '#e53935', cursor: 'pointer' }}>🗑️</button>
               </span>
             </li>
+            <ResumeList />
             <ResumeUploader onUploadSuccess={handleUploadSuccess}/>
             <li style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #eee' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

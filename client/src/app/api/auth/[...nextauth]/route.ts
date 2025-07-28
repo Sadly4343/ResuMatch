@@ -2,13 +2,17 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import User from "@/lib/models/User";
 import { connectDB } from "@/lib/mongoose";
+import { Types, Document } from "mongoose";
 
-interface IUserWithMethods {
+interface IUserWithMethods  extends Document {
+    _id: Types.ObjectId;
+    email: string;
+    name: string;
+    password: string;
     comparePassword: (input: string) => Promise<boolean>;
-    toJSON: () => any;
 }
 
-const handler = NextAuth({
+export const authOptions = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -26,19 +30,25 @@ const handler = NextAuth({
                 const isValid = await user.comparePassword(credentials.password);
                 if (!isValid) return null;
 
-                return user.toJSON();
+                return {
+                  id: user._id.toString(),
+                  email: user.email,
+                  name: user.name,
+                };
             },
         }),
     ],
    callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user?: any}) {
       if (user) token.user = user;
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any}) {
       if (token?.user) session.user = token.user;
       return session;
     },
   },
-});
-export { handler as GET, handler as POST };
+};
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST};

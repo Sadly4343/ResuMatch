@@ -1,6 +1,7 @@
 "use client";
 import React, {useState} from "react";
 import apiService from "../../services/api";
+import { signIn } from "next-auth/react";
 
 
 
@@ -23,23 +24,24 @@ export default function LoginPage() {
       alert("Password must be at least 6 characters");
       return;
     }
-
+  setLoading(true);
     try {
-      setLoading(true);
 
-      const result = await apiService.login({
+      const result = await signIn("credentials", {
+        redirect: false,
         email,
-        password
+        password,
       });
 
-      apiService.setToken(result.token);
-      alert("Account has been Logged In")
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        alert("Account has been logged");
+        window.location.href = "/dashboard";
+      }
 
-      window.location.href = "/dashboard";
     } catch (error) {
-      console.error("Login error: ", error);
-      const errorMessage = error instanceof Error ? error.message : "Login Failure";
-      setError(errorMessage || "Login has failed");
+      setError("Login has failed");
 
 
     } finally {
