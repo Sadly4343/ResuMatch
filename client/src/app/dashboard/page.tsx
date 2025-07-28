@@ -26,6 +26,9 @@ export default function DashboardPage() {
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   // Form state for adding/editing applications
   const [formData, setFormData] = useState({
@@ -41,6 +44,12 @@ export default function DashboardPage() {
 
   // Load applications on component mount
   useEffect(() => {
+    // Check if user is authenticated
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/login';
+      return;
+    }
     loadApplications();
   }, []);
 
@@ -76,6 +85,10 @@ export default function DashboardPage() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
+    setError('');
+    setSuccessMessage('');
+    
     try {
       if (showEditModal && selectedApplication) {
         await apiService.updateApplication(selectedApplication._id, formData);
@@ -88,8 +101,14 @@ export default function DashboardPage() {
       setSelectedApplication(null);
       resetForm();
       loadApplications();
+      setSuccessMessage('Application saved successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error('Error saving application:', error);
+      setError('Failed to save application. Please try again.');
+      setTimeout(() => setError(''), 3000);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -99,8 +118,12 @@ export default function DashboardPage() {
       try {
         await apiService.deleteApplication(id);
         loadApplications();
+        setSuccessMessage('Application deleted successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
       } catch (error) {
         console.error('Error deleting application:', error);
+        setError('Failed to delete application. Please try again.');
+        setTimeout(() => setError(''), 3000);
       }
     }
   };
@@ -178,7 +201,23 @@ export default function DashboardPage() {
           <a href="/calendar" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '8px 16px' }}>Calendar</a>
         </nav>
         <div style={{ marginTop: 'auto', color: '#888', fontSize: 15, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-          <span>↩️</span> Logout
+          <span>↩️</span> 
+          <button
+            onClick={() => {
+              localStorage.removeItem('token');
+              window.location.href = '/login';
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#888',
+              fontSize: 15,
+              cursor: 'pointer',
+              padding: 0
+            }}
+          >
+            Logout
+          </button>
         </div>
       </aside>
 
@@ -211,6 +250,63 @@ export default function DashboardPage() {
             Add New Application
           </button>
         </div>
+
+        {/* Success/Error Messages */}
+        {successMessage && (
+          <div style={{
+            background: '#e8f5e8',
+            color: '#2e7d32',
+            padding: '12px 16px',
+            borderRadius: 8,
+            marginBottom: 16,
+            border: '1px solid #c8e6c9',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span>{successMessage}</span>
+            <button
+              onClick={() => setSuccessMessage('')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#2e7d32',
+                cursor: 'pointer',
+                fontSize: 18
+              }}
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {error && (
+          <div style={{
+            background: '#ffebee',
+            color: '#c62828',
+            padding: '12px 16px',
+            borderRadius: 8,
+            marginBottom: 16,
+            border: '1px solid #ffcdd2',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span>{error}</span>
+            <button
+              onClick={() => setError('')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#c62828',
+                cursor: 'pointer',
+                fontSize: 18
+              }}
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         {/* Stats Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24, marginBottom: 32 }}>
