@@ -8,19 +8,20 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Establish a separate Mongoose connection (used by models in /server/models)
 const connectMongoose = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Mongoose Connected');
+    console.log('Mongoose connected');
   } catch (error) {
-    console.error('Mongoose not connected');
+    console.error('Mongoose connection error:', error);
   }
 };
 
@@ -37,11 +38,13 @@ app.get('/api/health', (req, res) => {
 const authRoutes = require('./server/routes/auth');
 const applicationRoutes = require('./server/routes/applications');
 const toolsRoutes = require('./server/routes/tools');
+const notificationsRoutes = require('./server/routes/notifications');
 const resumeRoutes = require('./server/routes/upload');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/tools', toolsRoutes);
+app.use('/api/notifications', notificationsRoutes);
 app.use('/api/upload', resumeRoutes);
 
 // Default route
@@ -53,16 +56,18 @@ app.get('/', (req, res) => {
   });
 });
 
-initDb((err, db) => {
+// Initialize database (native driver) and then start server
+initDb((err) => {
   if (err) {
-    console.log('Native MongoDb error');
+    console.error('Native MongoDB connection error:', err);
   } else {
-    console.log('Native connected');
+    console.log('Native MongoDB connected');
   }
 
+  // Connect Mongoose (for ODM models)
   connectMongoose();
 
   app.listen(PORT, () => {
-    console.log('Server running');
+    console.log(`Server running on port ${PORT}`);
   });
 });
