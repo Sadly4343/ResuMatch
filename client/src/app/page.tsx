@@ -94,20 +94,21 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer style={{ padding: '2rem', background: '#f5f5f5', textAlign: 'center' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '1rem' }}>
-          <a href="#" style={{ color: '#666', textDecoration: 'none' }}>About</a>
-          <a href="#" style={{ color: '#666', textDecoration: 'none' }}>Contact</a>
-          <a href="#" style={{ color: '#666', textDecoration: 'none' }}>Privacy Policy</a>
-          <a href="#" style={{ color: '#666', textDecoration: 'none' }}>Terms of Service</a>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1rem' }}>
-          <span style={{ fontSize: '1.2rem' }}>🐦</span>
-          <span style={{ fontSize: '1.2rem' }}>💼</span>
-          <span style={{ fontSize: '1.2rem' }}>📘</span>
-        </div>
-        <p style={{ color: '#888', fontSize: '0.9rem' }}>© 2023 ResuMatch. All rights reserved.</p>
-      </footer>
+     <footer style={{ padding: '2rem', background: '#1f2937', textAlign: 'center', color: '#f9fafb' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '1rem' }}>
+      <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>About</a>
+      <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>Contact</a>
+      <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>Privacy Policy</a>
+      <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>Terms of Service</a>
+    </div>
+         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1rem' }}>
+           <span style={{ fontSize: '1.4rem' }}>🐦</span>
+           <span style={{ fontSize: '1.4rem' }}>💼</span>
+          <span style={{ fontSize: '1.4rem' }}>📘</span>
+         </div>
+  <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>© 2025 ResuMatch. All rights reserved.</p>
+</footer>
+
     </div>
   );
 }

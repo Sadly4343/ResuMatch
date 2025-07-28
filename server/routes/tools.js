@@ -5,9 +5,9 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY
+// });
 
 router.get('/', (req, res) => {
   res.render('tools', { result: null, letter: null });

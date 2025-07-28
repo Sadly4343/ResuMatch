@@ -1,7 +1,19 @@
 "use client";
 import React from "react";
 
+import ResumeUploader from "../components/resumeUploader";
+
+interface UploadResult {
+  message: string;
+  fileUrl: string;
+  fileName: string;
+  uploadDate: string;
+}
+
 export default function ResumesPage() {
+  const handleUploadSuccess = (data: UploadResult) => {
+    console.log("uploaded", data);
+  }
   return (
     <div style={{ display: 'flex', minHeight: '80vh', background: '#fafbfc' }}>
       <aside style={{ width: 220, background: '#fff', borderRight: '1px solid #eee', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -36,6 +48,7 @@ export default function ResumesPage() {
                 <button style={{ background: 'none', border: 'none', color: '#e53935', cursor: 'pointer' }}>🗑️</button>
               </span>
             </li>
+            <ResumeUploader onUploadSuccess={handleUploadSuccess}/>
             <li style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #eee' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span>📄</span>

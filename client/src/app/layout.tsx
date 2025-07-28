@@ -26,17 +26,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <header style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem', borderBottom: '1px solid #eee', background: '#fff', position: 'sticky', top: 0, zIndex: 100
-        }}>
-          <Link href="/" style={{ fontWeight: 700, fontSize: '1.5rem', textDecoration: 'none', color: '#222' }}>ResuMatch</Link>
-          <nav style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-            <Link href="/login" style={{ textDecoration: 'none', color: '#222', fontWeight: 500 }}>Login</Link>
-            <Link href="/dashboard" style={{ textDecoration: 'none', color: '#222', fontWeight: 500 }}>Dashboard</Link>
-            <Link href="/applications" style={{ textDecoration: 'none', color: '#222', fontWeight: 500 }}>Applications & Resumes</Link>
-            <Link href="/signup" style={{ textDecoration: 'none', color: '#fff', background: '#2196f3', padding: '0.5rem 1.2rem', borderRadius: '8px', fontWeight: 600 }}>Sign Up</Link>
-          </nav>
-        </header>
+       <header style={{  display: 'flex',  justifyContent: 'space-between',  alignItems: 'center',  padding: '1rem 2rem',  borderBottom: '1px solid #1e293b', background: '#0f172a', position: 'sticky', top: 0,
+  zIndex: 100
+}}>
+  <Link href="/" style={{ fontWeight: 700, fontSize: '1.5rem', textDecoration: 'none', color: '#ffffff' }}>ResuMatch</Link>
+  <nav style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+    <Link  href="/login" style={{ textDecoration: 'none', color: '#ffffff', fontWeight: 500 }}>Login</Link>
+    <Link href="/dashboard" style={{ textDecoration: 'none', color: '#ffffff', fontWeight: 500 }}>Dashboard</Link>
+    <Link href="/applications" style={{ textDecoration: 'none', color: '#ffffff', fontWeight: 500 }}>Applications & Resumes</Link>
+    <Link href="/signup" style={{
+      textDecoration: 'none', color: '#0f172a',background: '#7dd3fc',padding: '0.5rem 1.2rem',borderRadius: '8px', fontWeight: 600 }}>Sign Up</Link>
+  </nav>
+</header>
         <main style={{ minHeight: '80vh' }}>{children}</main>
       </body>
     </html>

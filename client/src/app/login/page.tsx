@@ -1,184 +1,137 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, {useState} from "react";
 import apiService from "../../services/api";
 
 export default function LoginPage() {
-  const [tab, setTab] = useState<'login' | 'register'>("login");
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const router = useRouter();
+  const [error, setError] = useState("")
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+    console.log("Login email:", email, "password", password);
+    setError("");
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
 
     try {
-      if (tab === 'register') {
-        if (formData.password !== formData.confirmPassword) {
-          setError('Passwords do not match');
-          return;
-        }
-        
-        const response = await apiService.register({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password
-        });
-        
-        apiService.setToken(response.token);
-        router.push('/dashboard');
-      } else {
-        const response = await apiService.login({
-          email: formData.email,
-          password: formData.password
-        });
-        
-        apiService.setToken(response.token);
-        router.push('/dashboard');
-      }
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message :'An error occurred');
+      setLoading(true);
+
+      const result = await apiService.login({
+        email,
+        password
+      });
+
+      apiService.setToken(result.token);
+      alert("Account has been Logged In")
+
+      window.location.href = "/dashboard";
+    } catch (error) {
+      console.error("Login error: ", error);
+      const errorMessage = error instanceof Error ? error.message : "Login Failure";
+      setError(errorMessage || "Login has failed");
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fafbfc' }}>
-      <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 2px 16px #0001', padding: '2.5rem 2rem', minWidth: 340, maxWidth: 360 }}>
-        <div style={{ textAlign: 'center', fontWeight: 700, fontSize: 24, marginBottom: 24 }}>ResuMatch</div>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 24 }}>
-          <button onClick={() => setTab('login')} style={{ border: 'none', background: 'none', fontWeight: tab==='login'?700:400, fontSize: 18, color: tab==='login'?'#222':'#888', borderBottom: tab==='login'?'2px solid #2196f3':'2px solid transparent', paddingBottom: 4, cursor: 'pointer' }}>Login</button>
-          <button onClick={() => setTab('register')} style={{ border: 'none', background: 'none', fontWeight: tab==='register'?700:400, fontSize: 18, color: tab==='register'?'#222':'#888', borderBottom: tab==='register'?'2px solid #2196f3':'2px solid transparent', paddingBottom: 4, cursor: 'pointer' }}>Register</button>
+      <div style={{ 
+        background: '#fff', 
+        borderRadius: 16, 
+        boxShadow: '0 4px 20px rgba(0,0,0,0.1)', 
+        padding: '2.5rem 2rem', 
+        minWidth: 400, 
+        maxWidth: 450,
+        border: '1px solid #eee'
+      }}>
+        <div style={{ textAlign: 'center', fontWeight: 700, fontSize: 24, marginBottom: 24, color: '#222' }}>
+          Login To Your Account
         </div>
         
-        {error && (
-          <div style={{ background: '#ffebee', color: '#c62828', padding: '8px 12px', borderRadius: 4, marginBottom: 16, fontSize: 14 }}>
+        {error && ( 
+          <div style={{ 
+            background: '#ffebee',
+            color: '#c62828',
+            padding: '12px 16px',
+            borderRadius: 8,
+            marginBottom: 20,
+            border: '1px solid #ffcdd2',
+            fontSize: 14,
+            textAlign: 'center'
+          }}>
             {error}
           </div>
         )}
-
-        {tab === 'login' ? (
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: 16 }}>
-              <input 
-                type="email" 
-                name="email"
-                placeholder="Email" 
-                value={formData.email}
-                onChange={handleInputChange}
-                style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ddd', marginBottom: 12 }} 
-              />
-              <input 
-                type="password" 
-                name="password"
-                placeholder="Password" 
-                value={formData.password}
-                onChange={handleInputChange}
-                style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ddd' }} 
-              />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <a href="#" style={{ color: '#2196f3', fontSize: 14 }}>Forgot Password?</a>
-              <button 
-                type="submit" 
-                disabled={loading}
-                style={{ 
-                  background: loading ? '#ccc' : '#2196f3', 
-                  color: '#fff', 
-                  border: 'none', 
-                  borderRadius: 8, 
-                  padding: '8px 24px', 
-                  fontWeight: 600, 
-                  fontSize: 16,
-                  cursor: loading ? 'not-allowed' : 'pointer'
-                }}
-              >
-                {loading ? 'Loading...' : 'Login'}
-              </button>
-            </div>
-            <div style={{ textAlign: 'center', color: '#888', margin: '16px 0' }}>OR CONTINUE WITH</div>
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-              <button type="button" style={{ flex: 1, border: '1px solid #ddd', borderRadius: 8, padding: '8px 0', background: '#fff', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}><span>📧</span> Google</button>
-              <button type="button" style={{ flex: 1, border: '1px solid #ddd', borderRadius: 8, padding: '8px 0', background: '#fff', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}><span>🍏</span> Apple</button>
-            </div>
-          </form>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: 16 }}>
-              <input 
-                type="text" 
-                name="name"
-                placeholder="Full Name" 
-                value={formData.name}
-                onChange={handleInputChange}
-                style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ddd', marginBottom: 12 }} 
-              />
-              <input 
-                type="email" 
-                name="email"
-                placeholder="Email" 
-                value={formData.email}
-                onChange={handleInputChange}
-                style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ddd', marginBottom: 12 }} 
-              />
-              <input 
-                type="password" 
-                name="password"
-                placeholder="Password" 
-                value={formData.password}
-                onChange={handleInputChange}
-                style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ddd', marginBottom: 12 }} 
-              />
-              <input 
-                type="password" 
-                name="confirmPassword"
-                placeholder="Confirm Password" 
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ddd' }} 
-              />
-            </div>
-            <button 
-              type="submit" 
-              disabled={loading}
+        
+        <form onSubmit={handleLogin}> 
+          <div style={{ marginBottom: 20 }}>
+            <input 
+              type="email" 
+              placeholder="Enter your email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
               style={{ 
-                background: loading ? '#ccc' : '#2196f3', 
-                color: '#fff', 
-                border: 'none', 
+                width: '100%', 
+                padding: '12px 16px', 
                 borderRadius: 8, 
-                padding: '12px 24px', 
-                fontWeight: 600, 
-                fontSize: 16, 
-                width: '100%',
+                border: '1px solid #ddd', 
                 marginBottom: 16,
-                cursor: loading ? 'not-allowed' : 'pointer'
+                fontSize: 16,
+                outline: 'none',
+                transition: 'border-color 0.2s'
               }}
-            >
-              {loading ? 'Loading...' : 'Sign Up'}
-            </button>
-            <div style={{ textAlign: 'center', color: '#888', margin: '16px 0' }}>OR CONTINUE WITH</div>
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-              <button type="button" style={{ flex: 1, border: '1px solid #ddd', borderRadius: 8, padding: '8px 0', background: '#fff', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}><span>📧</span> Google</button>
-              <button type="button" style={{ flex: 1, border: '1px solid #ddd', borderRadius: 8, padding: '8px 0', background: '#fff', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}><span>🍏</span> Apple</button>
-            </div>
-          </form>
-        )}
+              disabled={loading}
+            />
+            <input 
+              type="password" 
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}  
+              style={{ 
+                width: '100%', 
+                padding: '12px 16px', 
+                borderRadius: 8, 
+                border: '1px solid #ddd',
+                fontSize: 16,
+                outline: 'none',
+                transition: 'border-color 0.2s'
+              }}
+              disabled={loading}
+            />
+          </div>
+          
+          <button 
+            type="submit" 
+            style={{ 
+              background: '#2196f3', 
+              color: '#fff', 
+              border: 'none', 
+              borderRadius: 8, 
+              padding: '14px 24px', 
+              fontWeight: 600, 
+              fontSize: 16, 
+              width: '100%', 
+              marginBottom: 20,
+              cursor: 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+            onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = '#1976d2'}
+            onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = '#2196f3'}
+            disabled={loading}
+          >
+            {loading ? 'Logging In...' : 'Login Here'}
+          </button>
+          
+          <div style={{ textAlign: 'center', color: '#666', fontSize: 14 }}>
+            Don&apos;t have an account? <a href="/signup" style={{ color: '#2196f3', textDecoration: 'none', fontWeight: 500 }}>Sign Up Here</a>
+          </div>
+        </form>
       </div>
     </div>
   );
