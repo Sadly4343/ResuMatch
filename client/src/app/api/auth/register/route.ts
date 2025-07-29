@@ -9,7 +9,8 @@ export async function POST(req: NextRequest) {
         const result = await register(data);
         return NextResponse.json(result, { status: 201 });
 
-    } catch (error: any ) {
-        return NextResponse.json({ message: error.message }, { status: 400 });
+    } catch (error: unknown ) {
+         const message = error instanceof Error ? error.message : String(error);
+        return NextResponse.json({ message }, { status: 500});
     }
 }

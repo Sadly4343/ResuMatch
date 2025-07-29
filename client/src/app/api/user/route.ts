@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongoose";
+
 import { authenticate } from "@/lib/auth";
 import {
     getCurrentUser,
@@ -11,7 +11,8 @@ export async function GET(req: NextRequest) {
         const result = await getCurrentUser(user);
         return NextResponse.json(result);
 
-    } catch (error: any ) {
-        return NextResponse.json({ message: error.message }, { status: 401 });
+    }  catch (error: unknown ) {
+         const message = error instanceof Error ? error.message : String(error);
+        return NextResponse.json({ message }, { status: 500});
     }
 }

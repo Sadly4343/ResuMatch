@@ -12,8 +12,9 @@ export async function GET(req: NextRequest) {
         const user = await authenticate(req);
         const applications = await getUserApplications(user._id);
         return NextResponse.json(applications);
-    } catch (error: any) {
-        return NextResponse.json({ message: error.message }, { status: 500});
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        return NextResponse.json({ message }, { status: 500});
     }
 }
 
@@ -24,7 +25,8 @@ export async function POST(req: NextRequest) {
         const data = await req.json();
         const application = await createApplication(user._id, data);
         return NextResponse.json(application, { status: 201 });
-    } catch (error: any) {
-        return NextResponse.json({ message: error.message }, { status: 500 });
+    } catch (error: unknown){
+     const message = error instanceof Error ? error.message : String(error);
+        return NextResponse.json({ message }, { status: 500});
     }
 }

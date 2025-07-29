@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 interface S3File {
     Key: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export default function ResumeList() {
@@ -22,8 +22,13 @@ export default function ResumeList() {
             if (!res.ok) throw new Error("Failed to fetch the Resumes");
             const data = await res.json();
             setFiles(data.files || []);
-        } catch (err: any) {
+        } catch (err) {
+          if (err instanceof Error) {
             setError(err.message);
+          } else {
+            setError("unknown error");
+          }
+
 
         } finally {
             setLoading(false);

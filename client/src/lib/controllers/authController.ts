@@ -1,5 +1,6 @@
 import  jwt from "jsonwebtoken";
 import User from "@/lib/models/User";
+import type { Document } from "mongoose";
 
 
 // Generate JWT Token
@@ -50,7 +51,7 @@ export async function login({ email, password }: { email: string; password: stri
 }
 
 // Get Current User
-export async function getCurrentUser(user: any) {
-  return { user: user.toJsoN()};
+export async function getCurrentUser(user: Document) {
+  return { user: user.toJSON()};
 }
 

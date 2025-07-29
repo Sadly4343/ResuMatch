@@ -1,5 +1,18 @@
 import  Application from "@/lib/models/Application";
 
+interface ApplicationData {
+  jobTitle: string;
+  company: string;
+  status?: string;
+  dateApplied?: Date;
+  jobDescription?: string;
+  salary?: number;
+  location?: string;
+  notes?: string;
+  interviewDate?: string;
+  followUpDate?: string;
+}
+
 // Get all applications for a user
 export async function getUserApplications(userId: string) {
   return Application.find({ user: userId }).sort({ dateApplied: -1 });
@@ -12,7 +25,7 @@ export async function getApplication(userId: string, id: string) {
   return application;
 }
 // Create new application
-export async function createApplication(userId: string, data: any) {
+export async function createApplication(userId: string, data: ApplicationData) {
      const {
       jobTitle,
       company,
@@ -46,7 +59,7 @@ export async function createApplication(userId: string, data: any) {
   };
 
 // Update application
-export async function updateApplication(userId: string, id: string, data: any) {
+export async function updateApplication(userId: string, id: string, data: Partial<ApplicationData>) {
   const application = await Application.findOneAndUpdate(
     { _id: id, user: userId },
     { ...data, updatedAt: Date.now() },

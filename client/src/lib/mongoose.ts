@@ -12,7 +12,11 @@ export const connectDB = async () => {
         isConnected = true;
         console.log('Mongodb connected for NextAuth');
 
-    } catch (error: any) {
-        console.error('Mongoose error', error.message);
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Mongoose error', error.message
+            )
+
+        } else { console.error('Mongoose error', error);};
     }
 };

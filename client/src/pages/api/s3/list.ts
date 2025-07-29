@@ -23,7 +23,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
     );
     res.status(200).json({ files: data.Contents || [] });
-  } catch (error: any) {
-    res.status(500).json({ error: "Failed to list files" });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to list";
+    res.status(500).json({ error: message });
   }
 }

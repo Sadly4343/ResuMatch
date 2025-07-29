@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
 import fs from "fs";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import type { ObjectCannedACL } from "@aws-sdk/client-s3";
+
 
 export const config = {
   api: {
@@ -53,7 +53,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       fileName,
       uploadDate: new Date().toISOString(),
     });
-  } catch (error: any) {
-    return res.status(500).json({ error: error.message || "Failed to upload to S3" });
+  } catch (error: unknown) {
+    const message =  error instanceof Error ? error.message : "Failed to upload"; 
+    return res.status(500).json({ error:message });
   }
 }

@@ -1,6 +1,14 @@
 import  jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
 
+interface DecodedToken {
+    user?: {
+        id: string;
+        email: string;
+        name: string;
+    };
+}
+
 export async function authenticate(req: NextRequest) {
   
     const cookieToken = req.cookies.get("next-auth.session-token")?.value;
@@ -17,8 +25,8 @@ export async function authenticate(req: NextRequest) {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!);
-        return (decoded as any).user || decoded;
+        const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as DecodedToken;
+        return decoded.user || decoded;
 
     } catch (error) {
         throw new Error("Token is not a valid one");
