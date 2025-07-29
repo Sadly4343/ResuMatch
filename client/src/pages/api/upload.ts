@@ -18,31 +18,37 @@ const s3 = new S3Client({
   },
 });
 
-function parseForm(req: NextApiRequest): Promise<{ file: formidable.File }> {
+function parseForm(req: NextApiRequest): Promise<{ file: formidable.File; key: string }> {
   return new Promise((resolve, reject) => {
     const form = formidable();
-    form.parse(req, (err, _fields, files) => {
+    form.parse(req, (err, fields, files) => {
       if (err) return reject(err);
       let file = files.file as formidable.File | formidable.File[];
       if (Array.isArray(file)) file = file[0];
       if (!file) return reject(new Error("No file uploaded"));
-      resolve({ file });
+      let key: string | undefined;
+      if (Array.isArray(fields.key)) {
+        key = fields.key[0];
+      } else {
+        key = fields.key;
+      }
+      if (!key) return reject(new Error("No S3 key provided"));
+      resolve({ file, key });
     });
   });
 }
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end();
 
   try {
-    const { file } = await parseForm(req);
+    const { file, key } = await parseForm(req);
 
     const fileStream = fs.createReadStream(file.filepath);
     const fileName = `${Date.now()}-${file.originalFilename}`;
 
     const params = {
       Bucket: process.env.AWS_BUCKET_NAME!,
-      Key: `users/anonymous/resumes/${fileName}`,
+      Key: key,
       Body: fileStream,
       ContentType: file.mimetype ?? undefined,
     };

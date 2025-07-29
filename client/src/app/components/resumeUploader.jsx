@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
 
 export default function ResumeUploader({ onUploadSuccess }) {
+
+    const { data: session } = useSession();
     const [selectedFile, setSelectedFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
@@ -15,7 +18,16 @@ export default function ResumeUploader({ onUploadSuccess }) {
             return;
         }
 
+        const userEmail = session?.user?.email;
+        if (!userEmail) {
+            setError("Must be loggged in");
+            return;
+        }
+
+        const key = `${userEmail}/${selectedFile.name}`;
+
         const formData = new FormData();
+        formData.append('key', key);
         formData.append('file', selectedFile);
 
         setLoading(true);
@@ -38,8 +50,9 @@ export default function ResumeUploader({ onUploadSuccess }) {
             setResult(data);
             onUploadSuccess?.(data);
 
-            // Fetch pre-signed URL for the uploaded file
-            const presignRes = await fetch(`/api/s3/presign?key=${encodeURIComponent(`users/anonymous/resumes/${data.fileName}`)}`);
+            const userEmail = session?.user?.email;
+            const key = `${userEmail}/${selectedFile.name}`;
+            const presignRes = await fetch(`/api/s3/presign?key=${encodeURIComponent(key)}`);
             const presignData = await presignRes.json();
             setPresignedUrl(presignData.url);
 

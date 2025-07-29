@@ -1,7 +1,9 @@
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import SessionProviderWrapper from "../SessionProviderWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +40,9 @@ export default function RootLayout({
       textDecoration: 'none', color: '#0f172a',background: '#7dd3fc',padding: '0.5rem 1.2rem',borderRadius: '8px', fontWeight: 600 }}>Sign Up</Link>
   </nav>
 </header>
+      <SessionProviderWrapper>
         <main style={{ minHeight: '80vh' }}>{children}</main>
+      </SessionProviderWrapper>
       </body>
     </html>
   );

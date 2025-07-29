@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { getServerSession } from "next-auth";
+import authOptions from "@/lib/authOptions";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -12,8 +14,13 @@ const s3 = new S3Client({
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") return res.status(405).end();
 
-  const userEmail = "anonymous"; // Replace with real user email if you have auth
-  const prefix = `users/${userEmail}/resumes/`;
+  const session = await getServerSession(req, res, authOptions);
+  if (!session?.user?.email) {
+    return res.status(401).json({ error: "unautorized"});
+  }
+
+  const userEmail = session.user.email; // Replace with real user email if you have auth
+  const prefix = `${userEmail}/`;
 
   try {
     const data = await s3.send(

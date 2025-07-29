@@ -10,6 +10,7 @@ export default function ResumeList() {
     const [files, setFiles] = useState<S3File[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [loadingLink, setLoadingLink] = useState<string | null>(null);
 
     useEffect(() => {
 
@@ -40,6 +41,25 @@ export default function ResumeList() {
 
 }, [] );
 
+const handleViewClick = async (key: string) => {
+  setLoadingLink(key);
+  try {
+    const filename = key.split("/").pop() ?? "";
+    const res = await fetch(`/api/resumefetch?filename=${encodeURIComponent(filename)}`);
+    const data = await res.json();
+    if (res.ok && data.url) {
+      window.open(data.url, "_blank");
+    } else {
+      alert(data.error || "Failed to get signed URL")
+    } 
+
+  } catch (err) {
+    alert("Error fetching signed URL");
+  } finally {
+    setLoadingLink(null);
+  }
+}
+
 return (
     <div>
         <h2>Uploaded Resumes</h2>
@@ -48,13 +68,12 @@ return (
         <ul>
             {files.map((file: S3File) => (
             <li key={file.Key}>
-            <a
-              href={`https://${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${file.Key}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
               {file.Key.split("/").pop()}
-            </a>
+              <button
+                onClick={() => handleViewClick(file.Key)}
+                disabled={loadingLink === file.Key}
+                style={{ marginLeft: 10}}
+          >View</button>
           </li>
         ))}
       </ul>
