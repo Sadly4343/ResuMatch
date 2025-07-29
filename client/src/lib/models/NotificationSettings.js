@@ -50,4 +50,7 @@ notificationSettingsSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('NotificationSettings', notificationSettingsSchema); 
+const NotificationSettings = mongoose.models.NotificationSettings ||
+  mongoose.model('NotificationSettings', notificationSettingsSchema);
+
+export default NotificationSettings;
