@@ -1,19 +1,20 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") return res.status(405).end();
-
-  const { resume = '', job = '' } = req.body;
-
-  if (!resume || !job) {
-    return res.status(400).json({ error: 'Both resume and job description are required' });
-  }
-
+export async function POST(req: NextRequest) {
   try {
+    const { resume = '', job = '' } = await req.json();
+
+    if (!resume || !job) {
+      return NextResponse.json(
+        { error: "Both resume and job description are required" },
+        { status: 400 }
+      );
+    }
+
     const resumeWords = [...new Set(
       (resume.match(/\b\w+\b/g) || [])
         .map((w: string) => w.toLowerCase())
-        .filter((w: string)=> w.length > 2)
+        .filter((w: string) => w.length > 2)
     )];
 
     const jobWords = [...new Set(
@@ -69,7 +70,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       keywordsToAdd: keywordsToAdd
     };
 
-    res.json({
+    return NextResponse.json({
       score,
       matching: matching.slice(0, 10),
       missing: missing.slice(0, 10),
@@ -82,6 +83,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     });
   } catch (error) {
     console.error('Analysis error:', error);
-    res.status(500).json({ error: 'Failed to analyze resume' });
+    return NextResponse.json(
+      { error: 'Failed to analyze resume' },
+      { status: 500 }
+    );
   }
 }

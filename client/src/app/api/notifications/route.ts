@@ -1,51 +1,53 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import NotificationSettings from "@/lib/models/NotificationSettings"; // Adjust path as needed
+// src/app/api/notifications/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import NotificationSettings from "@/lib/models/NotificationSettings";
 import { Types } from "mongoose";
+import { connectDB } from "@/lib/mongoose"; // make sure you're connecting to the DB
 
-// Replace with real user ID from auth/session later
-const mockUserId = new Types.ObjectId('507f1f77bcf86cd799439011');
+// Temporary mock user ID — replace with session-based ID later
+const mockUserId = new Types.ObjectId("507f1f77bcf86cd799439011");
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function GET() {
+  await connectDB();
   try {
-    switch (req.method) {
-      case 'GET': {
-        let settings = await NotificationSettings.findOne({ user: mockUserId });
+    let settings = await NotificationSettings.findOne({ user: mockUserId });
 
-        if (!settings) {
-          settings = new NotificationSettings({
-            user: mockUserId,
-            settings: {
-              stagnantApplicationReminders: true,
-              interviewReminders: false,
-              applicationDeadlineAlerts: true,
-              weeklyDigest: false,
-              newJobMatches: true,
-            },
-            emailFrequency: 'daily',
-          });
-          await settings.save();
-        }
-
-        return res.status(200).json(settings);
-      }
-
-      case 'PUT': {
-        const { settings, emailFrequency } = req.body;
-
-        const updated = await NotificationSettings.findOneAndUpdate(
-          { user: mockUserId },
-          { settings, emailFrequency },
-          { new: true, upsert: true, runValidators: true }
-        );
-
-        return res.status(200).json(updated);
-      }
-
-      default:
-        return res.status(405).json({ error: 'Method not allowed' });
+    if (!settings) {
+      settings = new NotificationSettings({
+        user: mockUserId,
+        settings: {
+          stagnantApplicationReminders: true,
+          interviewReminders: false,
+          applicationDeadlineAlerts: true,
+          weeklyDigest: false,
+          newJobMatches: true,
+        },
+        emailFrequency: "daily",
+      });
+      await settings.save();
     }
+
+    return NextResponse.json(settings);
   } catch (error) {
-    console.error('Notification settings error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error("Notification settings GET error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  await connectDB();
+  try {
+    const { settings, emailFrequency } = await req.json();
+
+    const updated = await NotificationSettings.findOneAndUpdate(
+      { user: mockUserId },
+      { settings, emailFrequency },
+      { new: true, upsert: true, runValidators: true }
+    );
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("Notification settings PUT error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

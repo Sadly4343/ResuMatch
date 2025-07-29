@@ -1,9 +1,7 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") return res.status(405).end();
-
-  const { name = 'Applicant', role = 'Developer', company = 'Company', intro = '' } = req.body;
+export async function POST(req: NextRequest) {
+  const { name = 'Applicant', role = 'Developer', company = 'Company', intro = '' } = await req.json();
 
   const letter = `
 Dear ${company} Hiring Team,
@@ -19,5 +17,5 @@ Sincerely,
 ${name}
 `.trim();
 
-  res.json({ letter });
+  return NextResponse.json({ letter });
 }
