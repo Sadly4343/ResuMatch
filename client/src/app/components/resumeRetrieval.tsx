@@ -1,10 +1,18 @@
 "use client";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import React, { useEffect, useState } from "react";
 
 interface S3File {
     Key: string;
     [key: string]: unknown;
 }
+const s3 = new S3Client({
+  region: process.env.AWS_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
 
 export default function ResumeList() {
     const [files, setFiles] = useState<S3File[]>([]);
@@ -60,6 +68,34 @@ const handleViewClick = async (key: string) => {
   }
 }
 
+const handleViewDelete = async (key: string) => {
+  setLoadingLink(key);
+  try {
+    const res = await fetch("/api/s3/delete", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+
+      },
+      body: JSON.stringify({ key }),
+    })
+
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.error || "Failed to delete Resume");
+    }
+
+    setFiles((prev) => prev.filter((f) => f.Key !== key));
+  } catch (err) {
+    alert("error deleting resume");
+
+  } finally {
+    setLoadingLink(null);
+  }
+}
+
+
+
 return (
     <div>
         <h2>Uploaded Resumes</h2>
@@ -74,6 +110,12 @@ return (
                 disabled={loadingLink === file.Key}
                 style={{ marginLeft: 10}}
           >View</button>
+          
+           <button
+                onClick={() => handleViewDelete(file.Key)}
+                disabled={loadingLink === file.Key}
+                style={{ marginLeft: 10}}
+          >Delete</button>
           </li>
         ))}
       </ul>
