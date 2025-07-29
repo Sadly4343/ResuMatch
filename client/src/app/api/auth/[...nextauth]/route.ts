@@ -12,7 +12,7 @@ interface IUserWithMethods  extends Document {
     comparePassword: (input: string) => Promise<boolean>;
 }
 
-export const authOptions = {
+const authOptions = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
