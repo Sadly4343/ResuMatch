@@ -57,7 +57,7 @@ export default function ToolsPage() {
   const fetchNotificationSettings = async () => {
     setIsLoadingSettings(true);
     try {
-      const response = await fetch('http://localhost:3003/api/notifications/settings');
+      const response = await fetch('/api/notifications/settings');
       if (response.ok) {
         const data = await response.json();
         setNotificationSettings(data.settings);
@@ -73,7 +73,7 @@ export default function ToolsPage() {
   const updateNotificationSetting = async (setting: string, value: boolean) => {
     setIsSavingSettings(true);
     try {
-      const response = await fetch(`http://localhost:3003/api/notifications/settings/${setting}`, {
+      const response = await fetch(`/api/notifications/settings/${setting}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ value })
@@ -94,7 +94,7 @@ export default function ToolsPage() {
   const updateEmailFrequency = async (frequency: string) => {
     setIsSavingSettings(true);
     try {
-      const response = await fetch('http://localhost:3003/api/notifications/settings', {
+      const response = await fetch('/api/notifications/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ settings: notificationSettings, emailFrequency: frequency })
@@ -126,7 +126,7 @@ export default function ToolsPage() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3003/api/tools/coverletter', {
+      const response = await fetch('/api/tools/coverletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(coverLetterForm)
@@ -166,7 +166,7 @@ export default function ToolsPage() {
     setAnalysisError('');
 
     try {
-      const response = await fetch('http://localhost:3003/api/tools/analyze', {
+      const response = await fetch('/api/tools/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resume: resumeText, job: jobDescription })

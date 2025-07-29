@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export async function POST(req: NextRequest) {
-    const { name = 'Applicant', role = 'Developer', company = 'Company', intro = '' } = await req.json();
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== "POST") return res.status(405).end();
 
-  // Build cover letter using basic string template
+  const { name = 'Applicant', role = 'Developer', company = 'Company', intro = '' } = req.body;
+
   const letter = `
 Dear ${company} Hiring Team,
 
@@ -17,6 +18,6 @@ Thank you for your time and consideration.
 Sincerely,  
 ${name}
 `.trim();
-return NextResponse.json({ letter });
-;
+
+  res.json({ letter });
 }
