@@ -1,5 +1,5 @@
 {
-  "buildCommand": "./deploy.sh",
+  "buildCommand": "pnpm run build",
   "installCommand": "pnpm install",
   "outputDirectory": "client/.next"
 } 
