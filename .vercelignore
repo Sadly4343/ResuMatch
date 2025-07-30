@@ -1,6 +1,0 @@
-server/
-data/
-node_modules/
-.next/
-*.log
-.env* 
