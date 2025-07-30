@@ -1,17 +1,17 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import SessionProviderWrapper from "../SessionProviderWrapper";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const robotoMono = Roboto_Mono({
+  variable: "--font-roboto-mono",
   subsets: ["latin"],
 });
 
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${inter.variable} ${robotoMono.variable}`}>
        <header style={{  display: 'flex',  justifyContent: 'space-between',  alignItems: 'center',  padding: '1rem 2rem',  borderBottom: '1px solid #1e293b', background: '#0f172a', position: 'sticky', top: 0,
   zIndex: 100
 }}>

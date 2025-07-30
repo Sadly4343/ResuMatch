@@ -94,7 +94,6 @@ export default function CalendarPage() {
         <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 32, color: '#222' }}>ResuMatch</div>
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           <a href="/dashboard" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '12px 16px', fontSize: 16, transition: 'background-color 0.2s' }}>Dashboard</a>
-          <a href="/applications" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '12px 16px', fontSize: 16, transition: 'background-color 0.2s' }}>Applications</a>
           <a href="/resumes" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '12px 16px', fontSize: 16, transition: 'background-color 0.2s' }}>Resumes</a>
           <a href="/tools" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '12px 16px', fontSize: 16, transition: 'background-color 0.2s' }}>Tools</a>
           <a href="/calendar" style={{ fontWeight: 600, color: '#2196f3', textDecoration: 'none', background: '#f0f7ff', borderRadius: 8, padding: '12px 16px', fontSize: 16 }}>Calendar</a>

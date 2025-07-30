@@ -1,0 +1,22 @@
+{
+  "name": "resumatch",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "cd client && npm run start",
+    "lint": "cd client && npm run lint",
+    "server": "cd server && npm run dev"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
+} 

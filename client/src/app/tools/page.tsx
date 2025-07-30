@@ -190,7 +190,6 @@ export default function ToolsPage() {
         <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 32, color: '#222' }}>ResuMatch</div>
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           <a href="/dashboard" style={navLinkStyle}>Dashboard</a>
-          <a href="/applications" style={navLinkStyle}>Applications</a>
           <a href="/resumes" style={navLinkStyle}>Resumes</a>
           <a href="/tools" style={activeNavLinkStyle}>Tools</a>
           <a href="/calendar" style={navLinkStyle}>Calendar</a>
