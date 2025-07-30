@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import apiService from "../../services/api";
+import { useSession, signIn, signOut } from "next-auth/react";
+
 
 // Define the Application type
 interface Application {
@@ -30,6 +32,8 @@ export default function DashboardPage() {
   const [successMessage, setSuccessMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const { status } = useSession();
+
   // Form state for adding/editing applications
   const [formData, setFormData] = useState({
     jobTitle: '',
@@ -45,19 +49,21 @@ export default function DashboardPage() {
   // Load applications on component mount
   useEffect(() => {
     // Check if user is authenticated
-    const token = localStorage.getItem('token');
-    if (!token) {
-      window.location.href = '/login';
+    if (status === "loading") return;
+    if (status === "unauthenticated") {
+      signIn();
       return;
     }
     loadApplications();
-  }, []);
+  }, [status]);
 
   const loadApplications = async () => {
     try {
       setLoading(true);
-      const data = await apiService.getApplications();
-      setApplications(data || []);
+      const res = await fetch('/api/applications');
+      if (!res.ok) throw new Error("Failed to fetch applications");
+      const data = await res.json();
+      setApplications(data);
     } catch (error) {
       console.error('Error loading applications:', error);
     } finally {
@@ -204,8 +210,7 @@ export default function DashboardPage() {
           <span>↩️</span> 
           <button
             onClick={() => {
-              localStorage.removeItem('token');
-              window.location.href = '/login';
+              signOut()
             }}
             style={{
               background: 'none',

@@ -33,7 +33,6 @@ export default function SignupPage() {
         password
       });
 
-      apiService.setToken(result.token);
       alert("Account has been created!")
 
       window.location.href = "/login";

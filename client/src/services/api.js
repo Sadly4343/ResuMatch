@@ -5,32 +5,13 @@ class ApiService {
     this.baseURL = API_BASE_URL;
   }
 
-  // Get auth token from localStorage
-  getToken() {
-    return localStorage.getItem('token');
-  }
-
-  // Set auth token in localStorage
-  setToken(token) {
-    localStorage.setItem('token', token);
-  }
-
-  // Remove auth token from localStorage
-  removeToken() {
-    localStorage.removeItem('token');
-  }
 
   // Make HTTP request with auth headers
   async request(endpoint, options = {}) {
-    const token = this.getToken();
     const headers = {
       'Content-Type': 'application/json',
       ...options.headers,
     };
-
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
 
     const config = {
       ...options,
