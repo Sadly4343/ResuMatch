@@ -20,13 +20,14 @@ class ApiService {
 
     try {
       const response = await fetch(`${this.baseURL}${endpoint}`, config);
+
+      const isJson = response.headers.get('content-type')?.includes('application/json');
+      const data = isJson ? await response.json() : await response.text();
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Request failed');
+        throw new Error(data?.error || data?.message|| data || 'Request failed');
       }
-
-      return await response.json();
+      return data;
     } catch (error) {
       console.error('API request failed:', error);
       throw error;
@@ -69,14 +70,14 @@ class ApiService {
   }
 
   async updateApplication(id, applicationData) {
-    return this.request(`/applications/${id}`, {
+    return this.request(`/applications?id=${id}`, {
       method: 'PUT',
       body: JSON.stringify(applicationData),
     });
   }
 
   async deleteApplication(id) {
-    return this.request(`/applications/${id}`, {
+    return this.request(`/applications?id=${id}`, {
       method: 'DELETE',
     });
   }

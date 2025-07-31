@@ -5,6 +5,8 @@ import authOptions from "@/lib/authOptions";
 import {
     getUserApplications,
     createApplication,
+    updateApplication,
+    deleteApplication,
 } from '@/lib/controllers/applicationController';
 import User from "@/lib/models/User";
 
@@ -43,7 +45,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             res.status(500).json({ error: "failed to fetch 1"});
          }
             
-    }   else {
+    }  else if (req.method === "PUT") {
+        const { id } = req.query;
+            if (!id || typeof id !== "string") {
+                return res.status(400).json({error: "Missing application Id"});
+            }
+        try {
+            const updated = await updateApplication(userId, id, req.body);
+            res.status(200).json(updated);
+        } catch (error) {
+            console.error("Error with the updated application", error);
+            res.status(500).json({ error: "failed to update"});
+        }
+    } else if (req.method === "DELETE") {
+        const { id } = req.query;
+        if (!id || typeof id !== "string") {
+            return res.status(400).json({ error: "missing application id"});
+
+        } try {
+            const deleted = await deleteApplication(userId, id);
+            res.status(200).json(deleted);
+        } catch (error) {
+            console.error("Error deleting applications", error);
+            const message = error instanceof Error ? error.message : "failed to delete"
+            res.status(500).json({ error: message });
+        }
+    }
+    
+    else {
             res.setHeader("Allow", [ 'GET', "POST"])
             res.status(405).end(`Method ${req.method} Not Allowed`);
         }
