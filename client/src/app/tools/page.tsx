@@ -18,6 +18,9 @@ export default function ToolsPage() {
   // Resume analysis state
   const [resumeText, setResumeText] = useState('');
   const [jobDescription, setJobDescription] = useState('');
+  const [uploadedResumes, setUploadedResumes] = useState<Array<{ id: string; name: string; content: string }>>([]);
+  const [selectedResumeId, setSelectedResumeId] = useState('');
+  const [isLoadingResumes, setIsLoadingResumes] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<{
     score: number;
     matching: string[];
@@ -49,9 +52,10 @@ export default function ToolsPage() {
   const [isLoadingSettings, setIsLoadingSettings] = useState(false);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
-  // Fetch notification settings on component mount
+  // Fetch notification settings and resumes on component mount
   React.useEffect(() => {
     fetchNotificationSettings();
+    fetchUploadedResumes();
   }, []);
 
   const fetchNotificationSettings = async () => {
@@ -109,6 +113,29 @@ export default function ToolsPage() {
       console.error('Error updating email frequency:', error);
     } finally {
       setIsSavingSettings(false);
+    }
+  };
+
+  const fetchUploadedResumes = async () => {
+    setIsLoadingResumes(true);
+    try {
+      const response = await fetch('/api/resumefetch');
+      if (response.ok) {
+        const data = await response.json();
+        setUploadedResumes(data.resumes || []);
+      }
+    } catch (error) {
+      console.error('Error fetching uploaded resumes:', error);
+    } finally {
+      setIsLoadingResumes(false);
+    }
+  };
+
+  const handleResumeSelect = (resumeId: string) => {
+    setSelectedResumeId(resumeId);
+    const selectedResume = uploadedResumes.find(resume => resume.id === resumeId);
+    if (selectedResume) {
+      setResumeText(selectedResume.content);
     }
   };
 
@@ -213,12 +240,404 @@ export default function ToolsPage() {
 
         {/* Resume Analysis & Cover Letter */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 32 }}>
-          {/* Add your working resume and cover letter sections here (the detailed working version from your `feature/tools-page` branch) */}
+          {/* Resume Analysis Section */}
+          <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+            <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 16, color: '#222' }}>Resume Analysis</h2>
+            <p style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>Paste your resume and job description to get AI-powered analysis</p>
+            
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>Your Resume</label>
+              
+              {/* Resume Selection Dropdown */}
+              {uploadedResumes.length > 0 && (
+                <div style={{ marginBottom: 12 }}>
+                  <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#666' }}>
+                    Or select from uploaded resumes:
+                  </label>
+                  <select
+                    value={selectedResumeId}
+                    onChange={(e) => handleResumeSelect(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: 8,
+                      border: '1px solid #ddd',
+                      borderRadius: 6,
+                      fontSize: 14,
+                      background: '#fff'
+                    }}
+                  >
+                    <option value="">-- Select a resume --</option>
+                    {uploadedResumes.map((resume) => (
+                      <option key={resume.id} value={resume.id}>
+                        {resume.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              
+              <textarea
+                value={resumeText}
+                onChange={(e) => setResumeText(e.target.value)}
+                placeholder="Paste your resume text here or select from uploaded resumes above..."
+                style={{
+                  width: '100%',
+                  minHeight: 120,
+                  padding: 12,
+                  border: '1px solid #ddd',
+                  borderRadius: 8,
+                  fontSize: 14,
+                  resize: 'vertical'
+                }}
+              />
+              
+              {isLoadingResumes && (
+                <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
+                  Loading uploaded resumes...
+                </div>
+              )}
+            </div>
+            
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>Job Description</label>
+              <textarea
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                placeholder="Paste the job description here..."
+                style={{
+                  width: '100%',
+                  minHeight: 120,
+                  padding: 12,
+                  border: '1px solid #ddd',
+                  borderRadius: 8,
+                  fontSize: 14,
+                  resize: 'vertical'
+                }}
+              />
+            </div>
+            
+            <button
+              onClick={analyzeResume}
+              disabled={isAnalyzing}
+              style={{
+                background: isAnalyzing ? '#ccc' : '#2196f3',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: isAnalyzing ? 'not-allowed' : 'pointer',
+                width: '100%'
+              }}
+            >
+              {isAnalyzing ? 'Analyzing...' : 'Analyze Resume'}
+            </button>
+            
+            {analysisError && (
+              <div style={{ marginTop: 12, padding: 12, background: '#ffebee', color: '#c62828', borderRadius: 8, fontSize: 14 }}>
+                {analysisError}
+              </div>
+            )}
+            
+            {analysisResult && (
+              <div style={{ marginTop: 20, padding: 16, background: '#f5f5f5', borderRadius: 8 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: '#222' }}>Analysis Results</h3>
+                
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 24, fontWeight: 700, color: '#2196f3', marginBottom: 4 }}>
+                    {analysisResult.score}% Match
+                  </div>
+                  <div style={{ fontSize: 12, color: '#666' }}>
+                    {analysisResult.stats.matches} keywords matched
+                  </div>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                  <div>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#333' }}>Matching Keywords</h4>
+                    <div style={{ fontSize: 12, color: '#4caf50' }}>
+                      {analysisResult.matching.join(', ')}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#333' }}>Missing Keywords</h4>
+                    <div style={{ fontSize: 12, color: '#f44336' }}>
+                      {analysisResult.missing.join(', ')}
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#333' }}>AI Suggestions</h4>
+                  <ul style={{ fontSize: 12, color: '#666', paddingLeft: 16 }}>
+                    {analysisResult.aiAnalysis.suggestions.map((suggestion, index) => (
+                      <li key={index} style={{ marginBottom: 4 }}>{suggestion}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Cover Letter Generator Section */}
+          <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+            <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 16, color: '#222' }}>Cover Letter Generator</h2>
+            <p style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>Generate a personalized cover letter with AI</p>
+            
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>Your Name</label>
+              <input
+                type="text"
+                value={coverLetterForm.name}
+                onChange={(e) => handleCoverLetterChange('name', e.target.value)}
+                placeholder="Enter your full name"
+                style={{
+                  width: '100%',
+                  padding: 12,
+                  border: '1px solid #ddd',
+                  borderRadius: 8,
+                  fontSize: 14
+                }}
+              />
+            </div>
+            
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>Job Role</label>
+              <input
+                type="text"
+                value={coverLetterForm.role}
+                onChange={(e) => handleCoverLetterChange('role', e.target.value)}
+                placeholder="e.g., Software Engineer"
+                style={{
+                  width: '100%',
+                  padding: 12,
+                  border: '1px solid #ddd',
+                  borderRadius: 8,
+                  fontSize: 14
+                }}
+              />
+            </div>
+            
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>Company Name</label>
+              <input
+                type="text"
+                value={coverLetterForm.company}
+                onChange={(e) => handleCoverLetterChange('company', e.target.value)}
+                placeholder="e.g., Google"
+                style={{
+                  width: '100%',
+                  padding: 12,
+                  border: '1px solid #ddd',
+                  borderRadius: 8,
+                  fontSize: 14
+                }}
+              />
+            </div>
+            
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>Introduction (Optional)</label>
+              <textarea
+                value={coverLetterForm.intro}
+                onChange={(e) => handleCoverLetterChange('intro', e.target.value)}
+                placeholder="Any specific points you'd like to include..."
+                style={{
+                  width: '100%',
+                  minHeight: 80,
+                  padding: 12,
+                  border: '1px solid #ddd',
+                  borderRadius: 8,
+                  fontSize: 14,
+                  resize: 'vertical'
+                }}
+              />
+            </div>
+            
+            <button
+              onClick={generateCoverLetter}
+              disabled={isGenerating}
+              style={{
+                background: isGenerating ? '#ccc' : '#4caf50',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: isGenerating ? 'not-allowed' : 'pointer',
+                width: '100%',
+                marginBottom: 12
+              }}
+            >
+              {isGenerating ? 'Generating...' : 'Generate Cover Letter'}
+            </button>
+            
+            {error && (
+              <div style={{ marginBottom: 12, padding: 12, background: '#ffebee', color: '#c62828', borderRadius: 8, fontSize: 14 }}>
+                {error}
+              </div>
+            )}
+            
+            {generatedLetter && (
+              <div style={{ marginTop: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#222' }}>Generated Cover Letter</h3>
+                  <button
+                    onClick={copyToClipboard}
+                    style={{
+                      background: '#2196f3',
+                      color: 'white',
+                      border: 'none',
+                      padding: '8px 16px',
+                      borderRadius: 6,
+                      fontSize: 12,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Copy
+                  </button>
+                </div>
+                <div style={{
+                  padding: 16,
+                  background: '#f9f9f9',
+                  border: '1px solid #ddd',
+                  borderRadius: 8,
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  whiteSpace: 'pre-wrap',
+                  maxHeight: 300,
+                  overflowY: 'auto'
+                }}>
+                  {generatedLetter}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Calendar & Notification Settings */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
-          {/* Add your working calendar and email settings sections here (from the `feature/tools-page`) */}
+          {/* Calendar Section */}
+          <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+            <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 16, color: '#222' }}>Application Calendar</h2>
+            <p style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>Track your job applications and deadlines</p>
+            
+            <div style={{ 
+              background: '#f5f5f5', 
+              borderRadius: 8, 
+              padding: 20, 
+              textAlign: 'center',
+              border: '2px dashed #ddd'
+            }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>📅</div>
+              <div style={{ fontSize: 16, fontWeight: 500, color: '#666', marginBottom: 8 }}>
+                Calendar Integration
+              </div>
+              <div style={{ fontSize: 14, color: '#888' }}>
+                Calendar functionality coming soon
+              </div>
+            </div>
+          </div>
+
+          {/* Notification Settings Section */}
+          <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+            <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 16, color: '#222' }}>Notification Settings</h2>
+            <p style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>Customize your email notifications</p>
+            
+            {isLoadingSettings ? (
+              <div style={{ textAlign: 'center', padding: 20 }}>
+                <div style={{ fontSize: 14, color: '#666' }}>Loading settings...</div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={notificationSettings.stagnantApplicationReminders}
+                      onChange={(e) => updateNotificationSetting('stagnantApplicationReminders', e.target.checked)}
+                      style={{ width: 16, height: 16 }}
+                    />
+                    <span style={{ fontSize: 14, color: '#333' }}>Stagnant Application Reminders</span>
+                  </label>
+                </div>
+                
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={notificationSettings.interviewReminders}
+                      onChange={(e) => updateNotificationSetting('interviewReminders', e.target.checked)}
+                      style={{ width: 16, height: 16 }}
+                    />
+                    <span style={{ fontSize: 14, color: '#333' }}>Interview Reminders</span>
+                  </label>
+                </div>
+                
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={notificationSettings.applicationDeadlineAlerts}
+                      onChange={(e) => updateNotificationSetting('applicationDeadlineAlerts', e.target.checked)}
+                      style={{ width: 16, height: 16 }}
+                    />
+                    <span style={{ fontSize: 14, color: '#333' }}>Application Deadline Alerts</span>
+                  </label>
+                </div>
+                
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={notificationSettings.weeklyDigest}
+                      onChange={(e) => updateNotificationSetting('weeklyDigest', e.target.checked)}
+                      style={{ width: 16, height: 16 }}
+                    />
+                    <span style={{ fontSize: 14, color: '#333' }}>Weekly Digest</span>
+                  </label>
+                </div>
+                
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={notificationSettings.newJobMatches}
+                      onChange={(e) => updateNotificationSetting('newJobMatches', e.target.checked)}
+                      style={{ width: 16, height: 16 }}
+                    />
+                    <span style={{ fontSize: 14, color: '#333' }}>New Job Matches</span>
+                  </label>
+                </div>
+                
+                <div style={{ marginTop: 16 }}>
+                  <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>Email Frequency</label>
+                  <select
+                    value={emailFrequency}
+                    onChange={(e) => updateEmailFrequency(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: 12,
+                      border: '1px solid #ddd',
+                      borderRadius: 8,
+                      fontSize: 14
+                    }}
+                  >
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </div>
+                
+                {isSavingSettings && (
+                  <div style={{ textAlign: 'center', padding: 8 }}>
+                    <div style={{ fontSize: 14, color: '#666' }}>Saving...</div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>
