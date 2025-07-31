@@ -52,6 +52,24 @@ export default function ToolsPage() {
   const [isLoadingSettings, setIsLoadingSettings] = useState(false);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
+  // Calendar state
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [events, setEvents] = useState<Array<{
+    id: string;
+    title: string;
+    date: string;
+    type: 'application' | 'interview' | 'deadline' | 'followup';
+    description?: string;
+  }>>([]);
+  const [showEventForm, setShowEventForm] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    date: '',
+    type: 'application' as const,
+    description: ''
+  });
+
   // Fetch notification settings and resumes on component mount
   React.useEffect(() => {
     fetchNotificationSettings();
@@ -139,6 +157,69 @@ export default function ToolsPage() {
     }
   };
 
+  // Calendar functions
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
+    
+    return { daysInMonth, startingDay };
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+  const getEventsForDate = (date: string) => {
+    return events.filter(event => event.date === date);
+  };
+
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    setShowEventForm(true);
+    setNewEvent(prev => ({ ...prev, date: formatDate(date) }));
+  };
+
+  const addEvent = () => {
+    if (!newEvent.title || !newEvent.date) return;
+    
+    const event = {
+      id: Date.now().toString(),
+      ...newEvent
+    };
+    
+    setEvents(prev => [...prev, event]);
+    setNewEvent({ title: '', date: '', type: 'application', description: '' });
+    setShowEventForm(false);
+  };
+
+  const deleteEvent = (eventId: string) => {
+    setEvents(prev => prev.filter(event => event.id !== eventId));
+  };
+
+  const getEventTypeColor = (type: string) => {
+    switch (type) {
+      case 'application': return '#2196f3';
+      case 'interview': return '#4caf50';
+      case 'deadline': return '#f44336';
+      case 'followup': return '#ff9800';
+      default: return '#666';
+    }
+  };
+
+  const getEventTypeLabel = (type: string) => {
+    switch (type) {
+      case 'application': return 'Application';
+      case 'interview': return 'Interview';
+      case 'deadline': return 'Deadline';
+      case 'followup': return 'Follow-up';
+      default: return type;
+    }
+  };
+
   const handleCoverLetterChange = (field: string, value: string) => {
     setCoverLetterForm(prev => ({ ...prev, [field]: value }));
   };
@@ -181,6 +262,87 @@ export default function ToolsPage() {
       console.error('Failed to copy to clipboard:', err);
       alert('Failed to copy to clipboard');
     }
+  };
+
+  const downloadAsPDF = () => {
+    if (!generatedLetter) return;
+
+    // Create a new window with the cover letter content
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups to download PDF');
+      return;
+    }
+
+    // Create the HTML content for the PDF
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Cover Letter - ${coverLetterForm.name}</title>
+          <style>
+            body {
+              font-family: 'Times New Roman', serif;
+              line-height: 1.6;
+              margin: 1in;
+              font-size: 12pt;
+              color: #333;
+            }
+            .header {
+              margin-bottom: 20px;
+            }
+            .date {
+              margin-bottom: 20px;
+            }
+            .content {
+              white-space: pre-wrap;
+              margin-bottom: 20px;
+            }
+            .signature {
+              margin-top: 40px;
+            }
+            @media print {
+              body {
+                margin: 0.5in;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <strong>${coverLetterForm.name}</strong><br>
+            ${coverLetterForm.role ? `Position: ${coverLetterForm.role}` : ''}<br>
+            ${coverLetterForm.company ? `Company: ${coverLetterForm.company}` : ''}
+          </div>
+          
+          <div class="date">
+            ${new Date().toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </div>
+          
+          <div class="content">
+            ${generatedLetter}
+          </div>
+          
+          <div class="signature">
+            Sincerely,<br>
+            ${coverLetterForm.name}
+          </div>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+
+    // Wait for content to load, then print
+    printWindow.onload = () => {
+      printWindow.print();
+      printWindow.close();
+    };
   };
 
   const analyzeResume = async () => {
@@ -481,23 +643,39 @@ export default function ToolsPage() {
             
             {generatedLetter && (
               <div style={{ marginTop: 16 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#222' }}>Generated Cover Letter</h3>
-                  <button
-                    onClick={copyToClipboard}
-                    style={{
-                      background: '#2196f3',
-                      color: 'white',
-                      border: 'none',
-                      padding: '8px 16px',
-                      borderRadius: 6,
-                      fontSize: 12,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Copy
-                  </button>
-                </div>
+                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                   <h3 style={{ fontSize: 16, fontWeight: 600, color: '#222' }}>Generated Cover Letter</h3>
+                   <div style={{ display: 'flex', gap: 8 }}>
+                     <button
+                       onClick={copyToClipboard}
+                       style={{
+                         background: '#2196f3',
+                         color: 'white',
+                         border: 'none',
+                         padding: '8px 16px',
+                         borderRadius: 6,
+                         fontSize: 12,
+                         cursor: 'pointer'
+                       }}
+                     >
+                       Copy
+                     </button>
+                     <button
+                       onClick={downloadAsPDF}
+                       style={{
+                         background: '#4caf50',
+                         color: 'white',
+                         border: 'none',
+                         padding: '8px 16px',
+                         borderRadius: 6,
+                         fontSize: 12,
+                         cursor: 'pointer'
+                       }}
+                     >
+                       Download PDF
+                     </button>
+                   </div>
+                 </div>
                 <div style={{
                   padding: 16,
                   background: '#f9f9f9',
@@ -523,21 +701,373 @@ export default function ToolsPage() {
             <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 16, color: '#222' }}>Application Calendar</h2>
             <p style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>Track your job applications and deadlines</p>
             
-            <div style={{ 
-              background: '#f5f5f5', 
-              borderRadius: 8, 
-              padding: 20, 
-              textAlign: 'center',
-              border: '2px dashed #ddd'
-            }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>📅</div>
-              <div style={{ fontSize: 16, fontWeight: 500, color: '#666', marginBottom: 8 }}>
-                Calendar Integration
+            {/* Calendar Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <button
+                onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))}
+                style={{
+                  background: '#f5f5f5',
+                  border: 'none',
+                  padding: '8px 12px',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  fontSize: 14
+                }}
+              >
+                ←
+              </button>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: '#222' }}>
+                {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </h3>
+              <button
+                onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))}
+                style={{
+                  background: '#f5f5f5',
+                  border: 'none',
+                  padding: '8px 12px',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  fontSize: 14
+                }}
+              >
+                →
+              </button>
+            </div>
+
+            {/* Calendar Grid */}
+            <div style={{ marginBottom: 16 }}>
+              {/* Day headers */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, marginBottom: 8 }}>
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} style={{ 
+                    textAlign: 'center', 
+                    fontSize: 12, 
+                    fontWeight: 600, 
+                    color: '#666',
+                    padding: '8px 4px'
+                  }}>
+                    {day}
+                  </div>
+                ))}
               </div>
-              <div style={{ fontSize: 14, color: '#888' }}>
-                Calendar functionality coming soon
+
+              {/* Calendar days */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1 }}>
+                {(() => {
+                  const { daysInMonth, startingDay } = getDaysInMonth(currentDate);
+                  const days = [];
+                  
+                  // Add empty cells for days before the first day of the month
+                  for (let i = 0; i < startingDay; i++) {
+                    days.push(<div key={`empty-${i}`} style={{ height: 40 }} />);
+                  }
+                  
+                  // Add days of the month
+                  for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                    const dateString = formatDate(date);
+                    const dayEvents = getEventsForDate(dateString);
+                    const isToday = formatDate(new Date()) === dateString;
+                    
+                    days.push(
+                      <div
+                        key={day}
+                        onClick={() => handleDateClick(date)}
+                        style={{
+                          height: 40,
+                          border: '1px solid #eee',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          background: isToday ? '#e3f2fd' : '#fff',
+                          fontSize: 12,
+                          position: 'relative'
+                        }}
+                      >
+                        <span style={{ fontWeight: isToday ? 600 : 400 }}>{day}</span>
+                        {dayEvents.length > 0 && (
+                          <div style={{
+                            position: 'absolute',
+                            bottom: 2,
+                            display: 'flex',
+                            gap: 1
+                          }}>
+                            {dayEvents.slice(0, 3).map((event, index) => (
+                              <div
+                                key={index}
+                                style={{
+                                  width: 4,
+                                  height: 4,
+                                  borderRadius: '50%',
+                                  background: getEventTypeColor(event.type)
+                                }}
+                              />
+                            ))}
+                            {dayEvents.length > 3 && (
+                              <div style={{
+                                width: 4,
+                                height: 4,
+                                borderRadius: '50%',
+                                background: '#999',
+                                fontSize: 8,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white'
+                              }}>
+                                +
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+                  
+                  return days;
+                })()}
               </div>
             </div>
+
+            {/* Add Event Button */}
+            <button
+              onClick={() => setShowEventForm(true)}
+              style={{
+                background: '#2196f3',
+                color: 'white',
+                border: 'none',
+                padding: '10px 16px',
+                borderRadius: 6,
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: 'pointer',
+                width: '100%',
+                marginBottom: 16
+              }}
+            >
+              + Add Event
+            </button>
+
+            {/* Event Form Modal */}
+            {showEventForm && (
+              <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0,0,0,0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 1000
+              }}>
+                <div style={{
+                  background: 'white',
+                  padding: 24,
+                  borderRadius: 12,
+                  width: '90%',
+                  maxWidth: 400
+                }}>
+                  <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, color: '#222' }}>
+                    Add New Event
+                  </h3>
+                  
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>
+                      Event Title
+                    </label>
+                    <input
+                      type="text"
+                      value={newEvent.title}
+                      onChange={(e) => setNewEvent(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="e.g., Google Application Deadline"
+                      style={{
+                        width: '100%',
+                        padding: 12,
+                        border: '1px solid #ddd',
+                        borderRadius: 8,
+                        fontSize: 14
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      value={newEvent.date}
+                      onChange={(e) => setNewEvent(prev => ({ ...prev, date: e.target.value }))}
+                      style={{
+                        width: '100%',
+                        padding: 12,
+                        border: '1px solid #ddd',
+                        borderRadius: 8,
+                        fontSize: 14
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>
+                      Event Type
+                    </label>
+                    <select
+                      value={newEvent.type}
+                      onChange={(e) => setNewEvent(prev => ({ ...prev, type: e.target.value as any }))}
+                      style={{
+                        width: '100%',
+                        padding: 12,
+                        border: '1px solid #ddd',
+                        borderRadius: 8,
+                        fontSize: 14
+                      }}
+                    >
+                      <option value="application">Application</option>
+                      <option value="interview">Interview</option>
+                      <option value="deadline">Deadline</option>
+                      <option value="followup">Follow-up</option>
+                    </select>
+                  </div>
+
+                  <div style={{ marginBottom: 20 }}>
+                    <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>
+                      Description (Optional)
+                    </label>
+                    <textarea
+                      value={newEvent.description}
+                      onChange={(e) => setNewEvent(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Add any notes..."
+                      style={{
+                        width: '100%',
+                        minHeight: 80,
+                        padding: 12,
+                        border: '1px solid #ddd',
+                        borderRadius: 8,
+                        fontSize: 14,
+                        resize: 'vertical'
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', gap: 12 }}>
+                    <button
+                      onClick={() => setShowEventForm(false)}
+                      style={{
+                        flex: 1,
+                        background: '#f5f5f5',
+                        color: '#666',
+                        border: 'none',
+                        padding: '12px',
+                        borderRadius: 8,
+                        fontSize: 14,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={addEvent}
+                      style={{
+                        flex: 1,
+                        background: '#2196f3',
+                        color: 'white',
+                        border: 'none',
+                        padding: '12px',
+                        borderRadius: 8,
+                        fontSize: 14,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Add Event
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Events List */}
+            {events.length > 0 && (
+              <div>
+                <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: '#333' }}>
+                  Upcoming Events
+                </h4>
+                <div style={{ maxHeight: 200, overflowY: 'auto' }}>
+                  {events
+                    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                    .slice(0, 5)
+                    .map(event => (
+                      <div
+                        key={event.id}
+                        style={{
+                          padding: 12,
+                          border: '1px solid #eee',
+                          borderRadius: 8,
+                          marginBottom: 8,
+                          background: '#f9f9f9'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ 
+                              fontSize: 14, 
+                              fontWeight: 500, 
+                              color: '#222',
+                              marginBottom: 4
+                            }}>
+                              {event.title}
+                            </div>
+                            <div style={{ 
+                              fontSize: 12, 
+                              color: '#666',
+                              marginBottom: 4
+                            }}>
+                              {new Date(event.date).toLocaleDateString()}
+                            </div>
+                            <div style={{
+                              display: 'inline-block',
+                              padding: '2px 8px',
+                              borderRadius: 12,
+                              fontSize: 10,
+                              fontWeight: 500,
+                              color: 'white',
+                              background: getEventTypeColor(event.type)
+                            }}>
+                              {getEventTypeLabel(event.type)}
+                            </div>
+                            {event.description && (
+                              <div style={{ 
+                                fontSize: 12, 
+                                color: '#666',
+                                marginTop: 4
+                              }}>
+                                {event.description}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => deleteEvent(event.id)}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#f44336',
+                              cursor: 'pointer',
+                              fontSize: 12,
+                              padding: 4
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Notification Settings Section */}
