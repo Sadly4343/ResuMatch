@@ -1,4 +1,5 @@
 "use client";
+import { STRING_LITERAL_DROP_BUNDLE } from "next/dist/shared/lib/constants";
 import React, { useState } from "react";
 
 export default function ToolsPage() {
@@ -10,10 +11,20 @@ export default function ToolsPage() {
     intro: ''
   });
 
-  // Cover letter result state
+  type EventType = 'application' | 'interview' | 'deadline' | 'followup';
+
+  type CalendarEvent = {
+    id: string;
+    title: string;
+    date: string;
+    type: EventType;
+    description?: string;
+  }
+    // Cover letter result state
   const [generatedLetter, setGeneratedLetter] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
+
 
   // Resume analysis state
   const [resumeText, setResumeText] = useState('');
@@ -55,18 +66,12 @@ export default function ToolsPage() {
   // Calendar state
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [events, setEvents] = useState<Array<{
-    id: string;
-    title: string;
-    date: string;
-    type: 'application' | 'interview' | 'deadline' | 'followup';
-    description?: string;
-  }>>([]);
   const [showEventForm, setShowEventForm] = useState(false);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [newEvent, setNewEvent] = useState({
     title: '',
     date: '',
-    type: 'application' as const,
+    type: 'application',
     description: ''
   });
 
@@ -188,7 +193,8 @@ export default function ToolsPage() {
     
     const event = {
       id: Date.now().toString(),
-      ...newEvent
+      ...newEvent,
+      type: newEvent.type as EventType,
     };
     
     setEvents(prev => [...prev, event]);
@@ -918,7 +924,7 @@ export default function ToolsPage() {
                     </label>
                     <select
                       value={newEvent.type}
-                      onChange={(e) => setNewEvent(prev => ({ ...prev, type: e.target.value as any }))}
+                      onChange={(e) => setNewEvent(prev => ({ ...prev, type: e.target.value as EventType }))}
                       style={{
                         width: '100%',
                         padding: 12,

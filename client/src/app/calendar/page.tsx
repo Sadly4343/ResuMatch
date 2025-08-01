@@ -1,6 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+
+
 interface CalendarEvent {
   id: string;
   title: string;
@@ -11,6 +16,9 @@ interface CalendarEvent {
 }
 
 export default function CalendarPage() {
+
+  const { status } = useSession();
+  const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -22,6 +30,7 @@ export default function CalendarPage() {
     type: 'reminder' as CalendarEvent['type']
   });
 
+
   useEffect(() => {
     const savedEvents = localStorage.getItem('calendarEvents');
     if (savedEvents) {
@@ -32,6 +41,21 @@ export default function CalendarPage() {
   useEffect(() => {
     localStorage.setItem('calendarEvents', JSON.stringify(events));
   }, [events]);
+
+   useEffect(() => {
+  
+    if ( status === "unauthenticated") {
+      router.push("/login");
+    }
+    }, [status, router]);
+  
+    if (status === "loading") {
+      return <div>Loading...</div>;
+    }
+    if (status === "unauthenticated") {
+      return null;
+    }
+  
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();

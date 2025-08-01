@@ -37,7 +37,7 @@ export default function LoginPage() {
         setError(result.error);
       } else {
         alert("Account has been logged");
-        window.location.href = "/resumes";
+        window.location.href = "/dashboard";
       }
 
     } catch (error) {

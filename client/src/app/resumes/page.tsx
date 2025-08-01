@@ -4,7 +4,11 @@ import React from "react";
 import ResumeUploader from "../components/resumeUploader";
 import ResumeList from "../components/resumeRetrieval";
 
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 import { useRef } from "react";
+import { useEffect } from "react";
 
 
 
@@ -16,9 +20,25 @@ interface UploadResult {
 }
 
 export default function ResumesPage() {
-  
 
+  const { status } = useSession();
+  const router = useRouter();
   const dialogBox = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+
+    if ( status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+  if (status === "unauthenticated") {
+    return null;
+  }
+
 
   const handleOpen = () => {
     dialogBox.current?.showModal();
@@ -65,4 +85,4 @@ export default function ResumesPage() {
       </main>
     </div>
   );
-} 
+}

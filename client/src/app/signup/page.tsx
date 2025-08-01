@@ -14,13 +14,46 @@ export default function SignupPage() {
     e.preventDefault();
     setError("");
 
+    const trimName = name.trim();
+    const trimEmail = email.trim();
+
+    if (!trimName) {
+      setError("Name is required");
+      return;
+    }
+
+    if (!trimEmail) {
+      setError("Email is required");
+      return;
+    }
+
+    const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailReg.test(trimEmail)) {
+      setError("Please enter a valid email");
+      return;
+    }
+
+    if (!password) {
+      setError("Password is required");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Passwords do not match. Please try again!");
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+
+    const passwordReg = /^(?=.*[0-9])(?=.*[!@#$%^&*])/;
+
+    if (!passwordReg.test(password)) {
+      setError("Password must atleast one number and special character");
       return;
     }
 
@@ -28,8 +61,8 @@ export default function SignupPage() {
       setLoading(true);
 
       const result = await apiService.register({
-        name,
-        email,
+        name: trimName,
+        email: trimEmail,
         password
       });
 
