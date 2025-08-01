@@ -3,6 +3,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import apiService from "../../services/api";
 import { useSession, signIn, signOut } from "next-auth/react";
+import Footer from "../components/Footer";
 
 
 // Define the Application type
@@ -311,560 +312,565 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '80vh', background: '#fafbfc' }}>
-      {/* Sidebar */}
-      <aside style={{ width: 220, background: '#fff', borderRight: '1px solid #eee', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: 24 }}>
-        <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 32 }}>ResuMatch</div>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <a href="/dashboard" style={{ fontWeight: 600, color: '#2196f3', textDecoration: 'none', background: '#f0f7ff', borderRadius: 8, padding: '8px 16px' }}>Dashboard</a>
-          <a href="/resumes" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '8px 16px' }}>Resumes</a>
-          <a href="/tools" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '8px 16px' }}>Tools</a>
-          <a href="/calendar" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '8px 16px' }}>Calendar</a>
-        </nav>
-        <div style={{ marginTop: 'auto', color: '#888', fontSize: 15, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-          <span>↩️</span> 
-          <button
-            onClick={() => {
-              signOut()
-            }}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#888',
-              fontSize: 15,
-              cursor: 'pointer',
-              padding: 0
-            }}
-          >
-            Logout
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main style={{ flex: 1, padding: '2.5rem 3rem' }}>
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#222', margin: 0 }}>Dashboard</h1>
-            <p style={{ margin: '8px 0 0 0', color: '#666', fontSize: 16 }}>
-              Manage your job applications and track your progress
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: 12 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#fafbfc' }}>
+      <div style={{ display: 'flex', flex: 1 }}>
+        {/* Sidebar */}
+        <aside style={{ width: 220, background: '#fff', borderRight: '1px solid #eee', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 32 }}>ResuMatch</div>
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <a href="/dashboard" style={{ fontWeight: 600, color: '#2196f3', textDecoration: 'none', background: '#f0f7ff', borderRadius: 8, padding: '8px 16px' }}>Dashboard</a>
+            <a href="/resumes" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '8px 16px' }}>Resumes</a>
+            <a href="/tools" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '8px 16px' }}>Tools</a>
+            <a href="/calendar" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '8px 16px' }}>Calendar</a>
+          </nav>
+          <div style={{ marginTop: 'auto', color: '#888', fontSize: 15, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+            <span>↩️</span> 
             <button
-              onClick={() => setShowCalendarView(!showCalendarView)}
-              style={{ 
-                background: showCalendarView ? '#1976d2' : '#fff', 
-                color: showCalendarView ? '#fff' : '#2196f3', 
-                border: '1px solid #2196f3', 
-                borderRadius: 8, 
-                padding: '12px 24px', 
-                fontWeight: 600, 
-                fontSize: 16,
-                cursor: 'pointer',
-                transition: 'background-color 0.2s'
+              onClick={() => {
+                signOut()
               }}
-            >
-              {showCalendarView ? 'List View' : 'Calendar View'}
-            </button>
-            <button
-              onClick={() => setShowAddModal(true)}
-              style={{ 
-                background: '#2196f3', 
-                color: '#fff', 
-                border: 'none', 
-                borderRadius: 8, 
-                padding: '12px 24px', 
-                fontWeight: 600, 
-                fontSize: 16,
-                cursor: 'pointer',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = '#1976d2'}
-              onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = '#2196f3'}
-            >
-              Add New Application
-            </button>
-          </div>
-        </div>
-
-        {/* Success/Error Messages */}
-        {successMessage && (
-          <div style={{
-            background: '#e8f5e8',
-            color: '#2e7d32',
-            padding: '12px 16px',
-            borderRadius: 8,
-            marginBottom: 16,
-            border: '1px solid #c8e6c9',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <span>{successMessage}</span>
-            <button
-              onClick={() => setSuccessMessage('')}
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#2e7d32',
+                color: '#888',
+                fontSize: 15,
                 cursor: 'pointer',
-                fontSize: 18
+                padding: 0
               }}
             >
-              ×
+              Logout
             </button>
           </div>
-        )}
+        </aside>
 
-        {error && (
-          <div style={{
-            background: '#ffebee',
-            color: '#c62828',
-            padding: '12px 16px',
-            borderRadius: 8,
-            marginBottom: 16,
-            border: '1px solid #ffcdd2',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <span>{error}</span>
-            <button
-              onClick={() => setError('')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#c62828',
-                cursor: 'pointer',
-                fontSize: 18
-              }}
-            >
-              ×
-            </button>
-          </div>
-        )}
-
-        {showCalendarView ? (
-          // Calendar View
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 32 }}>
-            <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 24, border: '1px solid #eee' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div style={{ fontWeight: 600, fontSize: 18, color: '#222' }}>
-                  {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-                </div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button 
-                    onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
-                    style={{ 
-                      background: '#fff', 
-                      color: '#2196f3', 
-                      border: '1px solid #2196f3', 
-                      borderRadius: 6, 
-                      padding: '6px 12px', 
-                      fontWeight: 600, 
-                      fontSize: 12,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    ←
-                  </button>
-                  <button 
-                    onClick={() => setCurrentDate(new Date())}
-                    style={{ 
-                      background: '#2196f3', 
-                      color: '#fff', 
-                      border: 'none', 
-                      borderRadius: 6, 
-                      padding: '6px 12px', 
-                      fontWeight: 600, 
-                      fontSize: 12,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Today
-                  </button>
-                  <button 
-                    onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
-                    style={{ 
-                      background: '#fff', 
-                      color: '#2196f3', 
-                      border: '1px solid #2196f3', 
-                      borderRadius: 6, 
-                      padding: '6px 12px', 
-                      fontWeight: 600, 
-                      fontSize: 12,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    →
-                  </button>
-                </div>
-              </div>
-              
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(7, 1fr)', 
-                gap: 2, 
-                background: '#f5f7fa', 
-                borderRadius: 8, 
-                padding: 16,
-                border: '1px solid #eee'
-              }}>
-                {['SUN','MON','TUE','WED','THU','FRI','SAT'].map(day => (
-                  <div key={day} style={{ 
-                    textAlign: 'center', 
-                    fontWeight: 600, 
-                    color: '#666', 
-                    padding: '8px 4px',
-                    fontSize: 12
-                  }}>
-                    {day}
-                  </div>
-                ))}
-                
-                {[...Array(startingDay)].map((_, i) => (
-                  <div key={`empty-${i}`} style={{ padding: 8 }}></div>
-                ))}
-                
-                {[...Array(daysInMonth)].map((_, i) => {
-                  const day = i + 1;
-                  const dayEvents = getEventsForDate(day);
-                  const isToday = new Date().getDate() === day && 
-                                 new Date().getMonth() === currentDate.getMonth() && 
-                                 new Date().getFullYear() === currentDate.getFullYear();
-                  
-                  return (
-                    <div 
-                      key={day} 
-                      style={{ 
-                        textAlign: 'center', 
-                        padding: 8, 
-                        color: '#222', 
-                        fontWeight: 500,
-                        fontSize: 14,
-                        cursor: 'pointer',
-                        borderRadius: 4,
-                        background: isToday ? '#e3f2fd' : 'transparent',
-                        border: isToday ? '2px solid #2196f3' : 'none',
-                        position: 'relative',
-                        minHeight: 40
-                      }}
-                    >
-                      {day}
-                      {dayEvents.length > 0 && (
-                        <div style={{ 
-                          position: 'absolute', 
-                          bottom: 2, 
-                          left: '50%', 
-                          transform: 'translateX(-50%)', 
-                          fontSize: 8, 
-                          color: getEventColor(dayEvents[0].type) 
-                        }}>
-                          ●
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              
-              <div style={{ display: 'flex', gap: 16, fontSize: 13, color: '#666', marginTop: 16, justifyContent: 'center' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ color: '#2196f3', fontSize: 16 }}>●</span> Interview
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ color: '#e53935', fontSize: 16 }}>●</span> Deadline
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ color: '#ff9800', fontSize: 16 }}>●</span> Follow-up
-                </span>
-              </div>
-            </section>
-            
-            <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 24, border: '1px solid #eee' }}>
-              <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 16, color: '#222' }}>Upcoming Events</div>
-              <div style={{ maxHeight: 400, overflowY: 'auto' }}>
-                {calendarEvents.length === 0 ? (
-                  <div style={{ color: '#666', fontSize: 14, textAlign: 'center', padding: '20px 0' }}>
-                    No events scheduled. Add applications with dates to see events here!
-                  </div>
-                ) : (
-                  <ul style={{ listStyle: 'none', padding: 0 }}>
-                    {calendarEvents
-                      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                      .slice(0, 10)
-                      .map(event => (
-                      <li key={event.id} style={{ 
-                        padding: '12px 0', 
-                        borderBottom: '1px solid #eee',
-                        fontSize: 14
-                      }}>
-                        <div style={{ 
-                          display: 'flex', 
-                          justifyContent: 'space-between', 
-                          alignItems: 'flex-start',
-                          marginBottom: 4
-                        }}>
-                          <div style={{ 
-                            fontWeight: 600, 
-                            color: getEventColor(event.type),
-                            fontSize: 12
-                          }}>
-                            {new Date(event.date).toLocaleDateString('en-US', { 
-                              month: 'short', 
-                              day: 'numeric' 
-                            })}
-                          </div>
-                        </div>
-                        <div style={{ 
-                          fontWeight: 500, 
-                          color: '#222',
-                          marginBottom: 2
-                        }}>
-                          {event.title}
-                        </div>
-                        {event.description && (
-                          <div style={{ 
-                            color: '#666', 
-                            fontSize: 12,
-                            lineHeight: 1.4
-                          }}>
-                            {event.description}
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </section>
-          </div>
-        ) : (
-          // List View
-          <>
-            {/* Stats Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24, marginBottom: 32 }}>
-              <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 1px 8px #0001', border: '1px solid #eee' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ padding: 8, background: '#e3f2fd', borderRadius: 8, marginRight: 16 }}>
-                    <span style={{ fontSize: 24 }}>📊</span>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#666', margin: 0 }}>Total</p>
-                    <p style={{ fontSize: 24, fontWeight: 700, color: '#222', margin: 0 }}>{stats.total}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 1px 8px #0001', border: '1px solid #eee' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ padding: 8, background: '#e3f2fd', borderRadius: 8, marginRight: 16 }}>
-                    <span style={{ fontSize: 24 }}>📝</span>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#666', margin: 0 }}>Applied</p>
-                    <p style={{ fontSize: 24, fontWeight: 700, color: '#2196f3', margin: 0 }}>{stats.applied}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 1px 8px #0001', border: '1px solid #eee' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ padding: 8, background: '#fff3e0', borderRadius: 8, marginRight: 16 }}>
-                    <span style={{ fontSize: 24 }}>📅</span>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#666', margin: 0 }}>Interviewing</p>
-                    <p style={{ fontSize: 24, fontWeight: 700, color: '#f57c00', margin: 0 }}>{stats.interviewing}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 1px 8px #0001', border: '1px solid #eee' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ padding: 8, background: '#e8f5e8', borderRadius: 8, marginRight: 16 }}>
-                    <span style={{ fontSize: 24 }}>✅</span>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#666', margin: 0 }}>Offered</p>
-                    <p style={{ fontSize: 24, fontWeight: 700, color: '#388e3c', margin: 0 }}>{stats.offered}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 1px 8px #0001', border: '1px solid #eee' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ padding: 8, background: '#ffebee', borderRadius: 8, marginRight: 16 }}>
-                    <span style={{ fontSize: 24 }}>❌</span>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#666', margin: 0 }}>Rejected</p>
-                    <p style={{ fontSize: 24, fontWeight: 700, color: '#d32f2f', margin: 0 }}>{stats.rejected}</p>
-                  </div>
-                </div>
-              </div>
+        {/* Main Content */}
+        <main style={{ flex: 1, padding: '2.5rem 3rem' }}>
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+            <div>
+              <h1 style={{ fontSize: 28, fontWeight: 700, color: '#222', margin: 0 }}>Dashboard</h1>
+              <p style={{ margin: '8px 0 0 0', color: '#666', fontSize: 16 }}>
+                Manage your job applications and track your progress
+              </p>
             </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => setShowCalendarView(!showCalendarView)}
+                style={{ 
+                  background: showCalendarView ? '#1976d2' : '#fff', 
+                  color: showCalendarView ? '#fff' : '#2196f3', 
+                  border: '1px solid #2196f3', 
+                  borderRadius: 8, 
+                  padding: '12px 24px', 
+                  fontWeight: 600, 
+                  fontSize: 16,
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+              >
+                {showCalendarView ? 'List View' : 'Calendar View'}
+              </button>
+              <button
+                onClick={() => setShowAddModal(true)}
+                style={{ 
+                  background: '#2196f3', 
+                  color: '#fff', 
+                  border: 'none', 
+                  borderRadius: 8, 
+                  padding: '12px 24px', 
+                  fontWeight: 600, 
+                  fontSize: 16,
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = '#1976d2'}
+                onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = '#2196f3'}
+              >
+                Add New Application
+              </button>
+            </div>
+          </div>
 
-            {/* Filters and Search */}
-            <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 24, marginBottom: 24, border: '1px solid #eee' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                  <div style={{ flex: 1, minWidth: 200 }}>
-                    <input
-                      type="text"
-                      placeholder="Search by job title or company..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '12px 16px',
-                        border: '1px solid #ddd',
-                        borderRadius: 8,
-                        fontSize: 16,
-                        outline: 'none'
-                      }}
-                    />
+          {/* Success/Error Messages */}
+          {successMessage && (
+            <div style={{
+              background: '#e8f5e8',
+              color: '#2e7d32',
+              padding: '12px 16px',
+              borderRadius: 8,
+              marginBottom: 16,
+              border: '1px solid #c8e6c9',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <span>{successMessage}</span>
+              <button
+                onClick={() => setSuccessMessage('')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#2e7d32',
+                  cursor: 'pointer',
+                  fontSize: 18
+                }}
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          {error && (
+            <div style={{
+              background: '#ffebee',
+              color: '#c62828',
+              padding: '12px 16px',
+              borderRadius: 8,
+              marginBottom: 16,
+              border: '1px solid #ffcdd2',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <span>{error}</span>
+              <button
+                onClick={() => setError('')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#c62828',
+                  cursor: 'pointer',
+                  fontSize: 18
+                }}
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          {showCalendarView ? (
+            // Calendar View
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 32 }}>
+              <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 24, border: '1px solid #eee' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <div style={{ fontWeight: 600, fontSize: 18, color: '#222' }}>
+                    {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                   </div>
-                  <div>
-                    <select
-                      value={filterStatus}
-                      onChange={(e) => setFilterStatus(e.target.value)}
-                      style={{
-                        padding: '12px 16px',
-                        border: '1px solid #ddd',
-                        borderRadius: 8,
-                        fontSize: 16,
-                        outline: 'none',
-                        minWidth: 150
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button 
+                      onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
+                      style={{ 
+                        background: '#fff', 
+                        color: '#2196f3', 
+                        border: '1px solid #2196f3', 
+                        borderRadius: 6, 
+                        padding: '6px 12px', 
+                        fontWeight: 600, 
+                        fontSize: 12,
+                        cursor: 'pointer'
                       }}
                     >
-                      <option value="all">All Status</option>
-                      <option value="applied">Applied</option>
-                      <option value="interviewing">Interviewing</option>
-                      <option value="offered">Offered</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
+                      ←
+                    </button>
+                    <button 
+                      onClick={() => setCurrentDate(new Date())}
+                      style={{ 
+                        background: '#2196f3', 
+                        color: '#fff', 
+                        border: 'none', 
+                        borderRadius: 6, 
+                        padding: '6px 12px', 
+                        fontWeight: 600, 
+                        fontSize: 12,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Today
+                    </button>
+                    <button 
+                      onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
+                      style={{ 
+                        background: '#fff', 
+                        color: '#2196f3', 
+                        border: '1px solid #2196f3', 
+                        borderRadius: 6, 
+                        padding: '6px 12px', 
+                        fontWeight: 600, 
+                        fontSize: 12,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      →
+                    </button>
                   </div>
                 </div>
-              </div>
-            </section>
-
-            {/* Applications Table */}
-            <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', overflow: 'hidden', border: '1px solid #eee' }}>
-              <div style={{ padding: '24px 24px 0 24px' }}>
-                <h3 style={{ fontWeight: 600, fontSize: 18, margin: 0, color: '#222' }}>Job Applications</h3>
-              </div>
-              
-              {filteredApplications.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '48px 24px' }}>
-                  <div style={{ fontSize: 48, marginBottom: 16 }}>📄</div>
-                  <h3 style={{ fontSize: 18, fontWeight: 600, color: '#222', margin: '0 0 8px 0' }}>No applications found</h3>
-                  <p style={{ color: '#666', margin: 0 }}>
-                    {searchTerm || filterStatus !== 'all' 
-                      ? 'Try adjusting your search or filter criteria.'
-                      : 'Get started by adding your first job application.'
-                    }
-                  </p>
-                  {!searchTerm && filterStatus === 'all' && (
-                    <div style={{ marginTop: 24 }}>
-                      <button
-                        onClick={() => setShowAddModal(true)}
+                
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(7, 1fr)', 
+                  gap: 2, 
+                  background: '#f5f7fa', 
+                  borderRadius: 8, 
+                  padding: 16,
+                  border: '1px solid #eee'
+                }}>
+                  {['SUN','MON','TUE','WED','THU','FRI','SAT'].map(day => (
+                    <div key={day} style={{ 
+                      textAlign: 'center', 
+                      fontWeight: 600, 
+                      color: '#666', 
+                      padding: '8px 4px',
+                      fontSize: 12
+                    }}>
+                      {day}
+                    </div>
+                  ))}
+                  
+                  {[...Array(startingDay)].map((_, i) => (
+                    <div key={`empty-${i}`} style={{ padding: 8 }}></div>
+                  ))}
+                  
+                  {[...Array(daysInMonth)].map((_, i) => {
+                    const day = i + 1;
+                    const dayEvents = getEventsForDate(day);
+                    const isToday = new Date().getDate() === day && 
+                                   new Date().getMonth() === currentDate.getMonth() && 
+                                   new Date().getFullYear() === currentDate.getFullYear();
+                    
+                    return (
+                      <div 
+                        key={day} 
                         style={{ 
-                          background: '#2196f3', 
-                          color: '#fff', 
-                          border: 'none', 
-                          borderRadius: 8, 
-                          padding: '12px 24px', 
-                          fontWeight: 600,
-                          cursor: 'pointer'
+                          textAlign: 'center', 
+                          padding: 8, 
+                          color: '#222', 
+                          fontWeight: 500,
+                          fontSize: 14,
+                          cursor: 'pointer',
+                          borderRadius: 4,
+                          background: isToday ? '#e3f2fd' : 'transparent',
+                          border: isToday ? '2px solid #2196f3' : 'none',
+                          position: 'relative',
+                          minHeight: 40
                         }}
                       >
-                        Add Application
-                      </button>
+                        {day}
+                        {dayEvents.length > 0 && (
+                          <div style={{ 
+                            position: 'absolute', 
+                            bottom: 2, 
+                            left: '50%', 
+                            transform: 'translateX(-50%)', 
+                            fontSize: 8, 
+                            color: getEventColor(dayEvents[0].type) 
+                          }}>
+                            ●
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <div style={{ display: 'flex', gap: 16, fontSize: 13, color: '#666', marginTop: 16, justifyContent: 'center' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ color: '#2196f3', fontSize: 16 }}>●</span> Interview
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ color: '#e53935', fontSize: 16 }}>●</span> Deadline
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ color: '#ff9800', fontSize: 16 }}>●</span> Follow-up
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ color: '#388e3c', fontSize: 16 }}>●</span> Reminder
+                  </span>
+                </div>
+              </section>
+              
+              <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 24, border: '1px solid #eee' }}>
+                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 16, color: '#222' }}>Upcoming Events</div>
+                <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+                  {calendarEvents.length === 0 ? (
+                    <div style={{ color: '#666', fontSize: 14, textAlign: 'center', padding: '20px 0' }}>
+                      No events scheduled. Add applications with dates to see events here!
                     </div>
+                  ) : (
+                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                      {calendarEvents
+                        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .slice(0, 10)
+                        .map(event => (
+                        <li key={event.id} style={{ 
+                          padding: '12px 0', 
+                          borderBottom: '1px solid #eee',
+                          fontSize: 14
+                        }}>
+                          <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'flex-start',
+                            marginBottom: 4
+                          }}>
+                            <div style={{ 
+                              fontWeight: 600, 
+                              color: getEventColor(event.type),
+                              fontSize: 12
+                            }}>
+                              {new Date(event.date).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric' 
+                              })}
+                            </div>
+                          </div>
+                          <div style={{ 
+                            fontWeight: 500, 
+                            color: '#222',
+                            marginBottom: 2
+                          }}>
+                            {event.title}
+                          </div>
+                          {event.description && (
+                            <div style={{ 
+                              color: '#666', 
+                              fontSize: 12,
+                              lineHeight: 1.4
+                            }}>
+                              {event.description}
+                            </div>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
                   )}
                 </div>
-              ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr style={{ background: '#f5f7fa', textAlign: 'left' }}>
-                      <th style={{ padding: '16px 24px', fontWeight: 600, color: '#666', fontSize: 14 }}>Job Title</th>
-                      <th style={{ padding: '16px 24px', fontWeight: 600, color: '#666', fontSize: 14 }}>Company</th>
-                      <th style={{ padding: '16px 24px', fontWeight: 600, color: '#666', fontSize: 14 }}>Status</th>
-                      <th style={{ padding: '16px 24px', fontWeight: 600, color: '#666', fontSize: 14 }}>Date Applied</th>
-                      <th style={{ padding: '16px 24px', fontWeight: 600, color: '#666', fontSize: 14 }}>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                      {filteredApplications.map((application) => (
-                        <tr key={application._id} style={{ borderBottom: '1px solid #eee' }}>
-                          <td style={{ padding: '16px 24px' }}>
-                            <div style={{ fontWeight: 600, color: '#222' }}>{application.jobTitle}</div>
-                            {application.location && (
-                              <div style={{ color: '#666', fontSize: 14, marginTop: 4 }}>{application.location}</div>
-                            )}
-                          </td>
-                          <td style={{ padding: '16px 24px', color: '#222' }}>
-                            {application.company}
-                          </td>
-                          <td style={{ padding: '16px 24px' }}>
-                            <span style={{
-                              display: 'inline-block',
-                              padding: '4px 12px',
-                              borderRadius: 16,
-                              fontSize: 12,
-                              fontWeight: 600,
-                              ...getStatusColor(application.status)
-                            }}>
-                              {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
-                            </span>
-                          </td>
-                          <td style={{ padding: '16px 24px', color: '#222' }}>
-                            {new Date(application.dateApplied).toLocaleDateString()}
-                          </td>
-                          <td style={{ padding: '16px 24px' }}>
-                            <div style={{ display: 'flex', gap: 12 }}>
-                              <button
-                                onClick={() => handleEdit(application)}
-                                style={{ 
-                                  background: 'none', 
-                                  border: 'none', 
-                                  color: '#2196f3', 
-                                  cursor: 'pointer',
-                                  fontWeight: 600,
-                                  fontSize: 14
-                                }}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDelete(application._id)}
-                                style={{ 
-                                  background: 'none', 
-                                  border: 'none', 
-                                  color: '#d32f2f', 
-                                  cursor: 'pointer',
-                                  fontWeight: 600,
-                                  fontSize: 14
-                                }}
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              </section>
+            </div>
+          ) : (
+            // List View
+            <>
+              {/* Stats Cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24, marginBottom: 32 }}>
+                <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 1px 8px #0001', border: '1px solid #eee' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ padding: 8, background: '#e3f2fd', borderRadius: 8, marginRight: 16 }}>
+                      <span style={{ fontSize: 24 }}>📊</span>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#666', margin: 0 }}>Total</p>
+                      <p style={{ fontSize: 24, fontWeight: 700, color: '#222', margin: 0 }}>{stats.total}</p>
+                    </div>
+                  </div>
                 </div>
-              )}
-            </section>
-          </>
-        )}
-      </main>
+
+                <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 1px 8px #0001', border: '1px solid #eee' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ padding: 8, background: '#e3f2fd', borderRadius: 8, marginRight: 16 }}>
+                      <span style={{ fontSize: 24 }}>📝</span>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#666', margin: 0 }}>Applied</p>
+                      <p style={{ fontSize: 24, fontWeight: 700, color: '#2196f3', margin: 0 }}>{stats.applied}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 1px 8px #0001', border: '1px solid #eee' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ padding: 8, background: '#fff3e0', borderRadius: 8, marginRight: 16 }}>
+                      <span style={{ fontSize: 24 }}>📅</span>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#666', margin: 0 }}>Interviewing</p>
+                      <p style={{ fontSize: 24, fontWeight: 700, color: '#f57c00', margin: 0 }}>{stats.interviewing}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 1px 8px #0001', border: '1px solid #eee' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ padding: 8, background: '#e8f5e8', borderRadius: 8, marginRight: 16 }}>
+                      <span style={{ fontSize: 24 }}>✅</span>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#666', margin: 0 }}>Offered</p>
+                      <p style={{ fontSize: 24, fontWeight: 700, color: '#388e3c', margin: 0 }}>{stats.offered}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 1px 8px #0001', border: '1px solid #eee' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ padding: 8, background: '#ffebee', borderRadius: 8, marginRight: 16 }}>
+                      <span style={{ fontSize: 24 }}>❌</span>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#666', margin: 0 }}>Rejected</p>
+                      <p style={{ fontSize: 24, fontWeight: 700, color: '#d32f2f', margin: 0 }}>{stats.rejected}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Filters and Search */}
+              <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 24, marginBottom: 24, border: '1px solid #eee' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1, minWidth: 200 }}>
+                      <input
+                        type="text"
+                        placeholder="Search by job title or company..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          border: '1px solid #ddd',
+                          borderRadius: 8,
+                          fontSize: 16,
+                          outline: 'none'
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <select
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                        style={{
+                          padding: '12px 16px',
+                          border: '1px solid #ddd',
+                          borderRadius: 8,
+                          fontSize: 16,
+                          outline: 'none',
+                          minWidth: 150
+                        }}
+                      >
+                        <option value="all">All Status</option>
+                        <option value="applied">Applied</option>
+                        <option value="interviewing">Interviewing</option>
+                        <option value="offered">Offered</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Applications Table */}
+              <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', overflow: 'hidden', border: '1px solid #eee' }}>
+                <div style={{ padding: '24px 24px 0 24px' }}>
+                  <h3 style={{ fontWeight: 600, fontSize: 18, margin: 0, color: '#222' }}>Job Applications</h3>
+                </div>
+                
+                {filteredApplications.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+                    <div style={{ fontSize: 48, marginBottom: 16 }}>📄</div>
+                    <h3 style={{ fontSize: 18, fontWeight: 600, color: '#222', margin: '0 0 8px 0' }}>No applications found</h3>
+                    <p style={{ color: '#666', margin: 0 }}>
+                      {searchTerm || filterStatus !== 'all' 
+                        ? 'Try adjusting your search or filter criteria.'
+                        : 'Get started by adding your first job application.'
+                      }
+                    </p>
+                    {!searchTerm && filterStatus === 'all' && (
+                      <div style={{ marginTop: 24 }}>
+                        <button
+                          onClick={() => setShowAddModal(true)}
+                          style={{ 
+                            background: '#2196f3', 
+                            color: '#fff', 
+                            border: 'none', 
+                            borderRadius: 8, 
+                            padding: '12px 24px', 
+                            fontWeight: 600,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Add Application
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ background: '#f5f7fa', textAlign: 'left' }}>
+                        <th style={{ padding: '16px 24px', fontWeight: 600, color: '#666', fontSize: 14 }}>Job Title</th>
+                        <th style={{ padding: '16px 24px', fontWeight: 600, color: '#666', fontSize: 14 }}>Company</th>
+                        <th style={{ padding: '16px 24px', fontWeight: 600, color: '#666', fontSize: 14 }}>Status</th>
+                        <th style={{ padding: '16px 24px', fontWeight: 600, color: '#666', fontSize: 14 }}>Date Applied</th>
+                        <th style={{ padding: '16px 24px', fontWeight: 600, color: '#666', fontSize: 14 }}>Actions</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                        {filteredApplications.map((application) => (
+                          <tr key={application._id} style={{ borderBottom: '1px solid #eee' }}>
+                            <td style={{ padding: '16px 24px' }}>
+                              <div style={{ fontWeight: 600, color: '#222' }}>{application.jobTitle}</div>
+                              {application.location && (
+                                <div style={{ color: '#666', fontSize: 14, marginTop: 4 }}>{application.location}</div>
+                              )}
+                            </td>
+                            <td style={{ padding: '16px 24px', color: '#222' }}>
+                              {application.company}
+                            </td>
+                            <td style={{ padding: '16px 24px' }}>
+                              <span style={{
+                                display: 'inline-block',
+                                padding: '4px 12px',
+                                borderRadius: 16,
+                                fontSize: 12,
+                                fontWeight: 600,
+                                ...getStatusColor(application.status)
+                              }}>
+                                {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                              </span>
+                            </td>
+                            <td style={{ padding: '16px 24px', color: '#222' }}>
+                              {new Date(application.dateApplied).toLocaleDateString()}
+                            </td>
+                            <td style={{ padding: '16px 24px' }}>
+                              <div style={{ display: 'flex', gap: 12 }}>
+                                <button
+                                  onClick={() => handleEdit(application)}
+                                  style={{ 
+                                    background: 'none', 
+                                    border: 'none', 
+                                    color: '#2196f3', 
+                                    cursor: 'pointer',
+                                    fontWeight: 600,
+                                    fontSize: 14
+                                  }}
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(application._id)}
+                                  style={{ 
+                                    background: 'none', 
+                                    border: 'none', 
+                                    color: '#d32f2f', 
+                                    cursor: 'pointer',
+                                    fontWeight: 600,
+                                    fontSize: 14
+                                  }}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </section>
+            </>
+          )}
+        </main>
+      </div>
 
       {/* Add Application Modal */}
       {showAddModal && (
@@ -1374,6 +1380,8 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+      
+      <Footer />
     </div>
   );
 } 
