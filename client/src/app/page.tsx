@@ -222,7 +222,7 @@ export default function HomePage() {
                 fontStyle: 'italic',
                 color: 'var(--text-primary)'
               }}>
-                "ResuMatch transformed my job search! The AI analysis is a game-changer."
+                &quot;ResuMatch transformed my job search! The AI analysis is a game-changer.&quot;
               </p>
               <p style={{ fontWeight: 600, color: 'var(--primary)' }}>- Jane D.</p>
             </div>
@@ -238,7 +238,7 @@ export default function HomePage() {
                 fontStyle: 'italic',
                 color: 'var(--text-primary)'
               }}>
-                "Finally, a tool that keeps all my applications organized. Highly recommend!"
+                &quot;Finally, a tool that keeps all my applications organized. Highly recommend!&quot;
               </p>
               <p style={{ fontWeight: 600, color: 'var(--primary)' }}>- Mark S.</p>
             </div>

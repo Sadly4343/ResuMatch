@@ -57,14 +57,6 @@ export default function RootLayout({
               borderRadius: '6px',
               transition: 'all 0.2s ease'
             }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = '#f5f7fa';
-              e.currentTarget.style.color = '#222222';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = '#666666';
-            }}
             >
               Login
             </Link>
@@ -76,14 +68,7 @@ export default function RootLayout({
               borderRadius: '6px',
               transition: 'all 0.2s ease'
             }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = '#f5f7fa';
-              e.currentTarget.style.color = '#222222';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = '#666666';
-            }}
+
             >
               Dashboard
             </Link>
@@ -95,14 +80,7 @@ export default function RootLayout({
               borderRadius: '6px',
               transition: 'all 0.2s ease'
             }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = '#f5f7fa';
-              e.currentTarget.style.color = '#222222';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = '#666666';
-            }}
+
             >
               Applications & Resumes
             </Link>
@@ -114,12 +92,6 @@ export default function RootLayout({
               borderRadius: '8px', 
               fontWeight: 600,
               transition: 'all 0.2s ease'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = '#1976d2';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = '#2196f3';
             }}
             >
               Sign Up
