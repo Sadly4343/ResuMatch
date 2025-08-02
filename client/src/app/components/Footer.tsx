@@ -3,30 +3,28 @@ import React from 'react';
 export default function Footer() {
   return (
     <footer style={{
-      background: '#fff',
-      borderTop: '1px solid #eee',
+      background: 'var(--background)',
+      borderTop: '1px solid var(--border)',
       padding: '2rem 3rem',
       marginTop: 'auto',
-      color: '#666',
+      color: 'var(--text-secondary)',
       fontSize: 14
     }}>
-      <div style={{
+      <div className="container" style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        maxWidth: 1200,
-        margin: '0 auto',
         textAlign: 'center'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8 }}>
-          <div style={{ fontWeight: 600, color: '#222', fontSize: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 16 }}>
             ResuMatch
           </div>
-          <span style={{ color: '#999' }}>•</span>
+          <span style={{ color: 'var(--text-muted)' }}>•</span>
           <span>AI-powered job search platform</span>
         </div>
         
-        <div style={{ color: '#999', fontSize: 12 }}>
+        <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>
           © 2025 ResuMatch. All rights reserved.
         </div>
       </div>
