@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  /* High contrast colors for accessibility */
+  --primary: #1976d2;
+  --primary-hover: #1565c0;
+  --text-primary: #1a1a1a;
+  --text-secondary: #424242;
+  --text-muted: #616161;
+  --border: #e0e0e0;
+  --success: #2e7d32;
+  --error: #d32f2f;
+  --warning: #ed6c02;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --text-primary: #ffffff;
+    --text-secondary: #e0e0e0;
+    --text-muted: #bdbdbd;
+    --border: #424242;
+  }
+}
+
 html,
 body {
   max-width: 100vw;
@@ -9,8 +35,8 @@ body {
 }
 
 body {
-  color: #171717;
-  background: #ffffff;
+  color: var(--foreground);
+  background: var(--background);
   font-family: "Inter", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -28,23 +54,17 @@ a {
   text-decoration: none;
 }
 
-/* Focus states for accessibility */
+/* High contrast focus indicators for accessibility */
 button:focus,
 input:focus,
 textarea:focus,
 select:focus,
 a:focus {
-  outline: 2px solid #2196f3;
+  outline: 2px solid #1976d2;
   outline-offset: 2px;
 }
 
-/* Utility classes for consistent styling */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
+/* Consistent button styles with proper contrast */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -57,28 +77,43 @@ a:focus {
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-height: 44px;
+  min-height: 44px; /* Touch target size */
+  min-width: 44px;
 }
 
 .btn-primary {
-  background: #2196f3;
-  color: white;
+  background: #1976d2;
+  color: #ffffff;
+  border: 1px solid #1976d2;
 }
 
 .btn-primary:hover {
-  background: #1976d2;
+  background: #1565c0;
+  border-color: #1565c0;
+}
+
+.btn-primary:focus {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
 }
 
 .btn-secondary {
-  background: #f5f7fa;
-  color: #222222;
-  border: 1px solid #e0e0e0;
+  background: #ffffff;
+  color: #1976d2;
+  border: 1px solid #1976d2;
 }
 
 .btn-secondary:hover {
-  background: #f0f0f0;
+  background: #f5f5f5;
+  border-color: #1565c0;
 }
 
+.btn-secondary:focus {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}
+
+/* Consistent input styles */
 .input {
   width: 100%;
   padding: 12px 16px;
@@ -88,20 +123,64 @@ a:focus {
   outline: none;
   transition: border-color 0.2s ease;
   min-height: 44px;
+  color: #1a1a1a;
+  background: #ffffff;
 }
 
 .input:focus {
-  border-color: #2196f3;
+  border-color: #1976d2;
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
 }
 
+.input::placeholder {
+  color: #616161;
+}
+
+/* Consistent label styles */
+label {
+  display: block;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* Status colors with proper contrast */
+.status-applied {
+  background: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #bbdefb;
+}
+
+.status-interviewing {
+  background: #fff3e0;
+  color: #ed6c02;
+  border: 1px solid #ffcc02;
+}
+
+.status-offered {
+  background: #e8f5e8;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.status-rejected {
+  background: #ffebee;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+}
+
+/* Card styles */
 .card {
-  background: white;
+  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e0e0e0;
   overflow: hidden;
 }
 
+/* Modal styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -116,7 +195,7 @@ a:focus {
 }
 
 .modal {
-  background: white;
+  background: #ffffff;
   border-radius: 12px;
   padding: 32px;
   max-width: 500px;
@@ -125,37 +204,12 @@ a:focus {
   overflow-y: auto;
 }
 
-/* Status colors with proper contrast ratios */
-.status-applied {
-  background: #e3f2fd;
-  color: #1976d2;
-  border: 1px solid #bbdefb;
-}
-
-.status-interviewing {
-  background: #fff3e0;
-  color: #f57c00;
-  border: 1px solid #ffcc02;
-}
-
-.status-offered {
-  background: #e8f5e8;
-  color: #388e3c;
-  border: 1px solid #c8e6c9;
-}
-
-.status-rejected {
-  background: #ffebee;
-  color: #d32f2f;
-  border: 1px solid #ffcdd2;
-}
-
 /* Loading spinner */
 .spinner {
   width: 48px;
   height: 48px;
   border: 4px solid #f0f0f0;
-  border-top: 4px solid #2196f3;
+  border-top: 4px solid #1976d2;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto;
@@ -172,17 +226,23 @@ a:focus {
 
 /* Responsive utilities */
 @media (max-width: 768px) {
-  .container {
-    padding: 0 0.5rem;
-  }
-
   .btn {
     padding: 10px 20px;
     font-size: 14px;
   }
 
-  .modal {
-    padding: 24px;
-    margin: 1rem;
+  .input {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .btn {
+    border: 2px solid currentColor;
+  }
+
+  .input {
+    border: 2px solid currentColor;
   }
 }
