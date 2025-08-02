@@ -1,10 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Footer from "../components/Footer";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
-
 
 interface CalendarEvent {
   id: string;
@@ -30,6 +29,17 @@ export default function CalendarPage() {
     type: 'reminder' as CalendarEvent['type']
   });
 
+  // Notification settings state
+  const [notificationSettings, setNotificationSettings] = useState({
+    stagnantApplicationReminders: true,
+    interviewReminders: false,
+    applicationDeadlineAlerts: true,
+    weeklyDigest: false,
+    newJobMatches: true
+  });
+  const [emailFrequency, setEmailFrequency] = useState('daily');
+  const [isLoadingSettings, setIsLoadingSettings] = useState(false);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   useEffect(() => {
     const savedEvents = localStorage.getItem('calendarEvents');
@@ -42,20 +52,80 @@ export default function CalendarPage() {
     localStorage.setItem('calendarEvents', JSON.stringify(events));
   }, [events]);
 
-   useEffect(() => {
-  
+  useEffect(() => {
+    fetchNotificationSettings();
+  }, []);
+
+  useEffect(() => {
     if ( status === "unauthenticated") {
       router.push("/login");
     }
-    }, [status, router]);
-  
-    if (status === "loading") {
-      return <div>Loading...</div>;
+  }, [status, router]);
+
+  const fetchNotificationSettings = async () => {
+    setIsLoadingSettings(true);
+    try {
+      const response = await fetch('/api/notifications/settings');
+      if (response.ok) {
+        const data = await response.json();
+        setNotificationSettings(data.settings);
+        setEmailFrequency(data.emailFrequency);
+      }
+    } catch (error) {
+      console.error('Error fetching notification settings:', error);
+    } finally {
+      setIsLoadingSettings(false);
     }
-    if (status === "unauthenticated") {
-      return null;
+  };
+
+  const updateNotificationSetting = async (setting: string, value: boolean) => {
+    setIsSavingSettings(true);
+    try {
+      const response = await fetch(`/api/notifications/settings/${setting}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setNotificationSettings(data.settings);
+        setEmailFrequency(data.emailFrequency);
+      }
+    } catch (error) {
+      console.error('Error updating notification setting:', error);
+    } finally {
+      setIsSavingSettings(false);
     }
-  
+  };
+
+  const updateEmailFrequency = async (frequency: string) => {
+    setIsSavingSettings(true);
+    try {
+      const response = await fetch('/api/notifications/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings: notificationSettings, emailFrequency: frequency })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setNotificationSettings(data.settings);
+        setEmailFrequency(data.emailFrequency);
+      }
+    } catch (error) {
+      console.error('Error updating email frequency:', error);
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+  if (status === "unauthenticated") {
+    return null;
+  }
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -113,253 +183,357 @@ export default function CalendarPage() {
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   return (
-    <div style={{ display: 'flex', minHeight: '80vh', background: '#fafbfc' }}>
-      <aside style={{ width: 220, background: '#fff', borderRight: '1px solid #eee', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: 24 }}>
-        <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 32, color: '#222' }}>ResuMatch</div>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <a href="/dashboard" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '12px 16px', fontSize: 16, transition: 'background-color 0.2s' }}>Dashboard</a>
-          <a href="/resumes" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '12px 16px', fontSize: 16, transition: 'background-color 0.2s' }}>Resumes</a>
-          <a href="/tools" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '12px 16px', fontSize: 16, transition: 'background-color 0.2s' }}>Tools</a>
-          <a href="/calendar" style={{ fontWeight: 600, color: '#2196f3', textDecoration: 'none', background: '#f0f7ff', borderRadius: 8, padding: '12px 16px', fontSize: 16 }}>Calendar</a>
-        </nav>
-        <div style={{ marginTop: 'auto', color: '#888', fontSize: 15, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span>↩️</span> 
-          <button
-            onClick={() => {
-              localStorage.removeItem('token');
-              window.location.href = '/login';
-            }}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#888',
-              fontSize: 15,
-              cursor: 'pointer',
-              padding: 0
-            }}
-          >
-            Logout
-          </button>
-        </div>
-      </aside>
-      
-      <main style={{ flex: 1, padding: '2.5rem 3rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#222', margin: 0 }}>Calendar</h1>
-            <p style={{ margin: '8px 0 0 0', color: '#666', fontSize: 16 }}>Manage your job search schedule and deadlines</p>
-          </div>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button 
-              onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
-              style={{ 
-                background: '#fff', 
-                color: '#2196f3', 
-                border: '1px solid #2196f3', 
-                borderRadius: 8, 
-                padding: '8px 16px', 
-                fontWeight: 600, 
-                fontSize: 14,
-                cursor: 'pointer'
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#fafbfc' }}>
+      <div style={{ display: 'flex', flex: 1 }}>
+        <aside style={{ width: 220, background: '#fff', borderRight: '1px solid #eee', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 32, color: '#222' }}>ResuMatch</div>
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <a href="/dashboard" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '12px 16px', fontSize: 16, transition: 'background-color 0.2s' }}>Dashboard</a>
+            <a href="/resumes" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '12px 16px', fontSize: 16, transition: 'background-color 0.2s' }}>Resumes</a>
+            <a href="/tools" style={{ color: '#222', textDecoration: 'none', borderRadius: 8, padding: '12px 16px', fontSize: 16, transition: 'background-color 0.2s' }}>Tools</a>
+            <a href="/calendar" style={{ fontWeight: 600, color: '#2196f3', textDecoration: 'none', background: '#f0f7ff', borderRadius: 8, padding: '12px 16px', fontSize: 16 }}>Calendar</a>
+          </nav>
+          <div style={{ marginTop: 'auto', color: '#888', fontSize: 15, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>↩️</span> 
+            <button
+              onClick={() => {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#888',
+                fontSize: 15,
+                cursor: 'pointer',
+                padding: 0
               }}
             >
-              ← Previous
-            </button>
-            <button 
-              onClick={() => setCurrentDate(new Date())}
-              style={{ 
-                background: '#2196f3', 
-                color: '#fff', 
-                border: 'none', 
-                borderRadius: 8, 
-                padding: '8px 16px', 
-                fontWeight: 600, 
-                fontSize: 14,
-                cursor: 'pointer'
-              }}
-            >
-              Today
-            </button>
-            <button 
-              onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
-              style={{ 
-                background: '#fff', 
-                color: '#2196f3', 
-                border: '1px solid #2196f3', 
-                borderRadius: 8, 
-                padding: '8px 16px', 
-                fontWeight: 600, 
-                fontSize: 14,
-                cursor: 'pointer'
-              }}
-            >
-              Next →
+              Logout
             </button>
           </div>
-        </div>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 32 }}>
-          <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 24, border: '1px solid #eee' }}>
-            <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 16, color: '#222', textAlign: 'center' }}>
-              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+        </aside>
+
+        <main style={{ flex: 1, padding: '2.5rem 3rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+            <div>
+              <h1 style={{ fontSize: 28, fontWeight: 700, color: '#222', margin: 0 }}>Calendar</h1>
+              <p style={{ margin: '8px 0 0 0', color: '#666', fontSize: 16 }}>Manage your job search schedule and deadlines</p>
             </div>
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(7, 1fr)', 
-              gap: 2, 
-              background: '#f5f7fa', 
-              borderRadius: 8, 
-              padding: 16,
-              border: '1px solid #eee'
-            }}>
-              {['SUN','MON','TUE','WED','THU','FRI','SAT'].map(day => (
-                <div key={day} style={{ 
-                  textAlign: 'center', 
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button 
+                onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
+                style={{ 
+                  background: '#fff', 
+                  color: '#2196f3', 
+                  border: '1px solid #2196f3', 
+                  borderRadius: 8, 
+                  padding: '8px 16px', 
                   fontWeight: 600, 
-                  color: '#666', 
-                  padding: '8px 4px',
-                  fontSize: 12
-                }}>
-                  {day}
-                </div>
-              ))}
-              
-              {[...Array(startingDay)].map((_, i) => (
-                <div key={`empty-${i}`} style={{ padding: 8 }}></div>
-              ))}
-              
-              {[...Array(daysInMonth)].map((_, i) => {
-                const day = i + 1;
-                const dayEvents = getEventsForDate(day);
-                const isToday = new Date().getDate() === day && 
-                               new Date().getMonth() === currentDate.getMonth() && 
-                               new Date().getFullYear() === currentDate.getFullYear();
-                
-                return (
-                  <div 
-                    key={day} 
-                    style={{ 
-                      textAlign: 'center', 
-                      padding: 8, 
-                      color: '#222', 
-                      fontWeight: 500,
-                      fontSize: 14,
-                      cursor: 'pointer',
-                      borderRadius: 4,
-                      background: isToday ? '#e3f2fd' : 'transparent',
-                      border: isToday ? '2px solid #2196f3' : 'none',
-                      position: 'relative',
-                      minHeight: 40
-                    }}
-                    onClick={() => handleDateClick(day)}
-                  >
+                  fontSize: 14,
+                  cursor: 'pointer'
+                }}
+              >
+                ← Previous
+              </button>
+              <button 
+                onClick={() => setCurrentDate(new Date())}
+                style={{ 
+                  background: '#2196f3', 
+                  color: '#fff', 
+                  border: 'none', 
+                  borderRadius: 8, 
+                  padding: '8px 16px', 
+                  fontWeight: 600, 
+                  fontSize: 14,
+                  cursor: 'pointer'
+                }}
+              >
+                Today
+              </button>
+              <button 
+                onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
+                style={{ 
+                  background: '#fff', 
+                  color: '#2196f3', 
+                  border: '1px solid #2196f3', 
+                  borderRadius: 8, 
+                  padding: '8px 16px', 
+                  fontWeight: 600, 
+                  fontSize: 14,
+                  cursor: 'pointer'
+                }}
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 32 }}>
+            <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 24, border: '1px solid #eee' }}>
+              <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 16, color: '#222', textAlign: 'center' }}>
+                {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+              </div>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(7, 1fr)', 
+                gap: 2, 
+                background: '#f5f7fa', 
+                borderRadius: 8, 
+                padding: 16,
+                border: '1px solid #eee'
+              }}>
+                {['SUN','MON','TUE','WED','THU','FRI','SAT'].map(day => (
+                  <div key={day} style={{ 
+                    textAlign: 'center', 
+                    fontWeight: 600, 
+                    color: '#666', 
+                    padding: '8px 4px',
+                    fontSize: 12
+                  }}>
                     {day}
-                    {dayEvents.length > 0 && (
-                      <div style={{ 
-                        position: 'absolute', 
-                        bottom: 2, 
-                        left: '50%', 
-                        transform: 'translateX(-50%)', 
-                        fontSize: 8, 
-                        color: getEventColor(dayEvents[0].type) 
-                      }}>
-                        ●
+                  </div>
+                ))}
+                
+                {[...Array(startingDay)].map((_, i) => (
+                  <div key={`empty-${i}`} style={{ padding: 8 }}></div>
+                ))}
+                
+                {[...Array(daysInMonth)].map((_, i) => {
+                  const day = i + 1;
+                  const dayEvents = getEventsForDate(day);
+                  const isToday = new Date().getDate() === day && 
+                                 new Date().getMonth() === currentDate.getMonth() && 
+                                 new Date().getFullYear() === currentDate.getFullYear();
+                  
+                  return (
+                    <div 
+                      key={day} 
+                      style={{ 
+                        textAlign: 'center', 
+                        padding: 8, 
+                        color: '#222', 
+                        fontWeight: 500,
+                        fontSize: 14,
+                        cursor: 'pointer',
+                        borderRadius: 4,
+                        background: isToday ? '#e3f2fd' : 'transparent',
+                        border: isToday ? '2px solid #2196f3' : 'none',
+                        position: 'relative',
+                        minHeight: 40
+                      }}
+                      onClick={() => handleDateClick(day)}
+                    >
+                      {day}
+                      {dayEvents.length > 0 && (
+                        <div style={{ 
+                          position: 'absolute', 
+                          bottom: 2, 
+                          left: '50%', 
+                          transform: 'translateX(-50%)', 
+                          fontSize: 8, 
+                          color: getEventColor(dayEvents[0].type) 
+                        }}>
+                          ●
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              
+              <div style={{ display: 'flex', gap: 16, fontSize: 13, color: '#666', marginTop: 16, justifyContent: 'center' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ color: '#2196f3', fontSize: 16 }}>●</span> Interview
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ color: '#e53935', fontSize: 16 }}>●</span> Deadline
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ color: '#ff9800', fontSize: 16 }}>●</span> Follow-up
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ color: '#388e3c', fontSize: 16 }}>●</span> Reminder
+                </span>
+              </div>
+            </section>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 24, border: '1px solid #eee' }}>
+                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 16, color: '#222' }}>Upcoming Events</div>
+                <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+                  {events.length === 0 ? (
+                    <div style={{ color: '#666', fontSize: 14, textAlign: 'center', padding: '20px 0' }}>
+                      No events scheduled. Click on a date to add an event!
+                    </div>
+                  ) : (
+                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                      {events
+                        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .slice(0, 8)
+                        .map(event => (
+                        <li key={event.id} style={{ 
+                          padding: '12px 0', 
+                          borderBottom: '1px solid #eee',
+                          fontSize: 14
+                        }}>
+                          <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'flex-start',
+                            marginBottom: 4
+                          }}>
+                            <div style={{ 
+                              fontWeight: 600, 
+                              color: getEventColor(event.type),
+                              fontSize: 12
+                            }}>
+                              {new Date(event.date).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric' 
+                              })}
+                              {event.time && ` at ${event.time}`}
+                            </div>
+                            <button
+                              onClick={() => handleDeleteEvent(event.id)}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#d32f2f',
+                                cursor: 'pointer',
+                                fontSize: 12,
+                                padding: '2px 4px'
+                              }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                          <div style={{ 
+                            fontWeight: 500, 
+                            color: '#222',
+                            marginBottom: 2
+                          }}>
+                            {event.title}
+                          </div>
+                          {event.description && (
+                            <div style={{ 
+                              color: '#666', 
+                              fontSize: 12,
+                              lineHeight: 1.4
+                            }}>
+                              {event.description}
+                            </div>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </section>
+
+              {/* Notification Settings Section */}
+              <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 24, border: '1px solid #eee' }}>
+                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 16, color: '#222' }}>Notification Settings</div>
+                <p style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>Customize your email notifications</p>
+                
+                {isLoadingSettings ? (
+                  <div style={{ textAlign: 'center', padding: 20 }}>
+                    <div style={{ fontSize: 14, color: '#666' }}>Loading settings...</div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={notificationSettings.stagnantApplicationReminders}
+                          onChange={(e) => updateNotificationSetting('stagnantApplicationReminders', e.target.checked)}
+                          style={{ width: 16, height: 16 }}
+                        />
+                        <span style={{ fontSize: 14, color: '#333' }}>Stagnant Application Reminders</span>
+                      </label>
+                    </div>
+                    
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={notificationSettings.interviewReminders}
+                          onChange={(e) => updateNotificationSetting('interviewReminders', e.target.checked)}
+                          style={{ width: 16, height: 16 }}
+                        />
+                        <span style={{ fontSize: 14, color: '#333' }}>Interview Reminders</span>
+                      </label>
+                    </div>
+                    
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={notificationSettings.applicationDeadlineAlerts}
+                          onChange={(e) => updateNotificationSetting('applicationDeadlineAlerts', e.target.checked)}
+                          style={{ width: 16, height: 16 }}
+                        />
+                        <span style={{ fontSize: 14, color: '#333' }}>Application Deadline Alerts</span>
+                      </label>
+                    </div>
+                    
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={notificationSettings.weeklyDigest}
+                          onChange={(e) => updateNotificationSetting('weeklyDigest', e.target.checked)}
+                          style={{ width: 16, height: 16 }}
+                        />
+                        <span style={{ fontSize: 14, color: '#333' }}>Weekly Digest</span>
+                      </label>
+                    </div>
+                    
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={notificationSettings.newJobMatches}
+                          onChange={(e) => updateNotificationSetting('newJobMatches', e.target.checked)}
+                          style={{ width: 16, height: 16 }}
+                        />
+                        <span style={{ fontSize: 14, color: '#333' }}>New Job Matches</span>
+                      </label>
+                    </div>
+                    
+                    <div style={{ marginTop: 16 }}>
+                      <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, color: '#333' }}>Email Frequency</label>
+                      <select
+                        value={emailFrequency}
+                        onChange={(e) => updateEmailFrequency(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: 12,
+                          border: '1px solid #ddd',
+                          borderRadius: 8,
+                          fontSize: 14
+                        }}
+                      >
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                      </select>
+                    </div>
+                    
+                    {isSavingSettings && (
+                      <div style={{ textAlign: 'center', padding: 8 }}>
+                        <div style={{ fontSize: 14, color: '#666' }}>Saving...</div>
                       </div>
                     )}
                   </div>
-                );
-              })}
+                )}
+              </section>
             </div>
-            
-            <div style={{ display: 'flex', gap: 16, fontSize: 13, color: '#666', marginTop: 16, justifyContent: 'center' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: '#2196f3', fontSize: 16 }}>●</span> Interview
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: '#e53935', fontSize: 16 }}>●</span> Deadline
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: '#ff9800', fontSize: 16 }}>●</span> Follow-up
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: '#388e3c', fontSize: 16 }}>●</span> Reminder
-              </span>
-            </div>
-          </section>
-          
-          <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 24, border: '1px solid #eee' }}>
-            <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 16, color: '#222' }}>Upcoming Events</div>
-            <div style={{ maxHeight: 400, overflowY: 'auto' }}>
-              {events.length === 0 ? (
-                <div style={{ color: '#666', fontSize: 14, textAlign: 'center', padding: '20px 0' }}>
-                  No events scheduled. Click on a date to add an event!
-                </div>
-              ) : (
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                  {events
-                    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                    .slice(0, 10)
-                    .map(event => (
-                    <li key={event.id} style={{ 
-                      padding: '12px 0', 
-                      borderBottom: '1px solid #eee',
-                      fontSize: 14
-                    }}>
-                      <div style={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
-                        alignItems: 'flex-start',
-                        marginBottom: 4
-                      }}>
-                        <div style={{ 
-                          fontWeight: 600, 
-                          color: getEventColor(event.type),
-                          fontSize: 12
-                        }}>
-                          {new Date(event.date).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric' 
-                          })}
-                          {event.time && ` at ${event.time}`}
-                        </div>
-                        <button
-                          onClick={() => handleDeleteEvent(event.id)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#d32f2f',
-                            cursor: 'pointer',
-                            fontSize: 12,
-                            padding: '2px 4px'
-                          }}
-                        >
-                          ×
-                        </button>
-                      </div>
-                      <div style={{ 
-                        fontWeight: 500, 
-                        color: '#222',
-                        marginBottom: 2
-                      }}>
-                        {event.title}
-                      </div>
-                      {event.description && (
-                        <div style={{ 
-                          color: '#666', 
-                          fontSize: 12,
-                          lineHeight: 1.4
-                        }}>
-                          {event.description}
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </section>
-        </div>
-      </main>
+          </div>
+        </main>
+      </div>
+      <Footer />
 
       {showAddModal && (
         <div style={{
