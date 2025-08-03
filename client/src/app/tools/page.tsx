@@ -1,5 +1,4 @@
 "use client";
-import { STRING_LITERAL_DROP_BUNDLE } from "next/dist/shared/lib/constants";
 import React, { useState } from "react";
 import Footer from "../components/Footer";
 

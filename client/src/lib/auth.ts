@@ -29,6 +29,7 @@ export async function authenticate(req: NextRequest) {
         return decoded.user || decoded;
 
     } catch (error) {
+        console.error("JWT verification failed: ", error)
         throw new Error("Token is not a valid one");
     }
 };

@@ -1,19 +1,10 @@
 "use client";
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import React, { useEffect, useState } from "react";
 
 interface S3File {
     Key: string;
     [key: string]: unknown;
 }
-const s3 = new S3Client({
-  region: process.env.AWS_REGION!,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
-
 export default function ResumeList() {
     const [files, setFiles] = useState<S3File[]>([]);
     const [loading, setLoading] = useState(false);
@@ -33,9 +24,11 @@ export default function ResumeList() {
             const data = await res.json();
             setFiles(data.files || []);
         } catch (err) {
+          console.error("Error fetchign Resumes", err);
           if (err instanceof Error) {
             setError(err.message);
           } else {
+
             setError("unknown error");
           }
 
@@ -62,6 +55,7 @@ const handleViewClick = async (key: string) => {
     } 
 
   } catch (err) {
+    console.error("Error fetchign Signed URLS", err);
     alert("Error fetching signed URL");
   } finally {
     setLoadingLink(null);
@@ -87,6 +81,7 @@ const handleViewDelete = async (key: string) => {
 
     setFiles((prev) => prev.filter((f) => f.Key !== key));
   } catch (err) {
+    console.error("Error Deleting Resumes", err);
     alert("error deleting resume");
 
   } finally {

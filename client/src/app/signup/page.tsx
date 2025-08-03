@@ -59,7 +59,7 @@ export default function SignupPage() {
     try {
       setLoading(true);
 
-      const result = await apiService.register({
+      await apiService.register({
         name: trimName,
         email: trimEmail,
         password

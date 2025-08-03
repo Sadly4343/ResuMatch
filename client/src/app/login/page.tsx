@@ -1,6 +1,5 @@
 "use client";
 import React, {useState} from "react";
-import apiService from "../../services/api";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
@@ -27,12 +26,14 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
+        console.error("login error:", error);
         setError(result.error);
       } else {
         alert("Account has been logged");
         window.location.href = "/dashboard";
       }
     } catch (error) {
+      console.error("login error:", error);
       setError("Login has failed");
     } finally {
       setLoading(false);

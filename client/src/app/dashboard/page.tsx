@@ -50,6 +50,7 @@ export default function DashboardPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [showCalendarView, setShowCalendarView] = useState(false);
+  const [calendarLoaded, setCalendarLoaded] = useState(false);
 
   const { status } = useSession();
 
@@ -86,12 +87,15 @@ export default function DashboardPage() {
     if (savedEvents) {
       setCalendarEvents(JSON.parse(savedEvents));
     }
+    setCalendarLoaded(true);
   };
 
   // Save calendar events to localStorage
   useEffect(() => {
-    localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents));
-  }, [calendarEvents]);
+    if (calendarLoaded) {
+      localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents))
+    }
+  }, [calendarEvents, calendarLoaded]);
 
   const loadApplications = async () => {
     try {
@@ -1108,6 +1112,7 @@ export default function DashboardPage() {
                 </button>
                 <button
                   type="submit"
+                  disabled={submitting}
                   style={{
                     padding: '12px 24px',
                     background: '#2196f3',

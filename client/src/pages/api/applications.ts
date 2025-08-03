@@ -42,6 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const application = await createApplication(userId, req.body);
             res.status(201).json(application);
             } catch(error) {
+            console.error("Error with adding an application", error)
             res.status(500).json({ error: "failed to fetch 1"});
          }
             
@@ -67,8 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             res.status(200).json(deleted);
         } catch (error) {
             console.error("Error deleting applications", error);
-            const message = error instanceof Error ? error.message : "failed to delete"
-            res.status(500).json({ error: message });
+            res.status(500).json({ error: "failed to delete application" });
         }
     }
     
