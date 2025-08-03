@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${robotoMono.variable}`}>
-        <header style={{ 
+        <header className="header" style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
@@ -48,7 +48,7 @@ export default function RootLayout({
           }}>
             ResuMatch
           </Link>
-          <nav style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+          <nav className="nav" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
             <Link href="/login" style={{ 
               textDecoration: 'none', 
               color: '#666666', 
@@ -72,7 +72,7 @@ export default function RootLayout({
             >
               Dashboard
             </Link>
-            <Link href="/applications" style={{ 
+            <Link href="/tools" style={{ 
               textDecoration: 'none', 
               color: '#666666', 
               fontWeight: 500,
@@ -82,7 +82,7 @@ export default function RootLayout({
             }}
 
             >
-              Applications & Resumes
+              Resume Tools
             </Link>
             <Link href="/signup" style={{
               textDecoration: 'none', 

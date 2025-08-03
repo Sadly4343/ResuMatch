@@ -78,7 +78,7 @@ export default function ResumeUploader({ onUploadSuccess }) {
                     <p><strong>File:</strong> {result.fileName}</p>
                     <p>
                         <strong>URL:</strong>{" "}
-                        {presignedUrl ? (
+                        {presignedUrl ? ( 
                             <a href={presignedUrl} target="_blank" rel="noopener noreferrer">
                                 Download Resume
                             </a>

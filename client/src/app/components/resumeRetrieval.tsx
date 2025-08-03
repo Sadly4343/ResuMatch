@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import styles from './resumeRetrieval.module.css';
 
 interface S3File {
     Key: string;
@@ -93,23 +94,28 @@ const handleViewDelete = async (key: string) => {
 
 return (
     <div>
-        <h2>Uploaded Resumes</h2>
+        <h2 style={{ color: 'black',fontSize: "30px", fontWeight: 'bolder', display: 'flex', justifyContent: 'center'}}>Uploaded Resumes</h2>
         {loading && <p>Loading...</p>}
         {error && <p style={{ color: "red"}}> {error}</p>}
-        <ul>
+        <ul className={styles.resumeList}>
             {files.map((file: S3File) => (
-            <li key={file.Key}>
+            <li key={file.Key}
+            className={styles.resumeItem}>
+              <span className={styles.fileName}>
               {file.Key.split("/").pop()}
+              </span>
               <button
                 onClick={() => handleViewClick(file.Key)}
                 disabled={loadingLink === file.Key}
-                style={{ marginLeft: 10}}
+                                style={{ marginLeft: 10, background: loadingLink === file.key ? "#cdd0ffff" : "#482fd3ff",
+                  color: "#fff", border: "none", borderRadius: 6, padding: "5px 15px", fontWeight: 600, cursor: loadingLink === file.Key ? "not-allowed" : "pointer", transition: "background 0.2s"}}
           >View</button>
           
            <button
                 onClick={() => handleViewDelete(file.Key)}
                 disabled={loadingLink === file.Key}
-                style={{ marginLeft: 10}}
+                style={{ marginLeft: 10, background: loadingLink === file.key ? "#ffcdd2" : "#d32f2f",
+                  color: "#fff", border: "none", borderRadius: 6, padding: "5px 15px", fontWeight: 600, cursor: loadingLink === file.Key ? "not-allowed" : "pointer", transition: "background 0.2s"}}
           >Delete</button>
           </li>
         ))}

@@ -194,6 +194,16 @@ label {
   z-index: 1000;
 }
 
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid #eee;
+  padding: 2rem 1rem;
+}
+
 .modal {
   background: #ffffff;
   border-radius: 12px;
@@ -229,6 +239,16 @@ label {
   .btn {
     padding: 10px 20px;
     font-size: 14px;
+  }
+  .header {
+    flex-direction: column;
+    
+  }
+  .aside {
+    display: none !important;
+  }
+  .nav {
+    flex-direction: column;
   }
 
   .input {

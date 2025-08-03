@@ -1,0 +1,43 @@
+.resumeList {
+    color: black;
+    width: 80%;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+}
+
+.resumeItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 3px solid #ddd;
+    font-size: 20px;
+}
+.fileName {
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+    .resumeList{
+        width: 98%;
+        max-width: 100%;
+        font-size: 16px;
+    }
+    .resumeItem {
+        flex-direction: column;
+        align-items: flex-start;
+        font-size: 16px;
+        padding: 14px 0;
+
+    }
+
+    .fileName {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}

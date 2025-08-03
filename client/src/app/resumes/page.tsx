@@ -72,7 +72,7 @@ export default function ResumesPage() {
         </aside>
         <main style={{ flex: 1, padding: '2.5rem 3rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-            <div style={{ fontSize: 28, fontWeight: 700 }}>Resume Management</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: 'black' }}>Resumes</div>
             <button onClick={handleOpen} style={{  background: '#2196f3', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 24px', fontWeight: 600, fontSize: 16 }}>Upload New Resume</button>
             <dialog ref={dialogBox} style={{ padding: '50px', color: 'black', backgroundColor: '#2196f3', position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
                 <ResumeUploader onUploadSuccess={handleUploadSuccess} />
@@ -80,7 +80,6 @@ export default function ResumesPage() {
             </dialog>
           </div>
           <section style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 8px #0001', padding: 18 }}>
-            <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 12 }}>Your Resumes</div>
               <ResumeList />
       
           </section>
