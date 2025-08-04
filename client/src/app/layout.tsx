@@ -87,7 +87,7 @@ export default function RootLayout({
             <Link href="/signup" style={{
               textDecoration: 'none', 
               color: 'white',
-              background: '#2196f3', 
+              background: '#1976d2', 
               padding: '10px 20px',
               borderRadius: '8px', 
               fontWeight: 600,

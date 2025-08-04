@@ -4,12 +4,12 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111111;
   /* High contrast colors for accessibility */
   --primary: #1976d2;
   --primary-hover: #1565c0;
-  --text-primary: #1a1a1a;
-  --text-secondary: #424242;
+  --text-primary: #111111;
+  --text-secondary: #333333;
   --text-muted: #616161;
   --border: #e0e0e0;
   --success: #2e7d32;
