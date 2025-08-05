@@ -48,6 +48,7 @@ export default function ResumesPage() {
 
   const handleClose = () => {
     dialogBox.current?.close();
+    window.location.reload();
   }
 
   const handleUploadSuccess = (data: UploadResult) => {

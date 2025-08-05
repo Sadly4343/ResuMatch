@@ -50,14 +50,8 @@ export default function ResumeUploader({ onUploadSuccess }) {
             setResult(data);
             onUploadSuccess?.(data);
 
-            const userEmail = session?.user?.email;
-            const key = `${userEmail}/${selectedFile.name}`;
-            const presignRes = await fetch(`/api/s3/presign?key=${encodeURIComponent(key)}`);
-            const presignData = await presignRes.json();
-            setPresignedUrl(presignData.url);
-
         } catch (err) {
-            setError(err.message);
+            setError("test", err.message);
         } finally {
             setLoading(false);
         }
@@ -76,16 +70,6 @@ export default function ResumeUploader({ onUploadSuccess }) {
                 <div style={{ background: "green", padding: 5, marginTop: 5}}>
                     <h4>Upload Success!</h4>
                     <p><strong>File:</strong> {result.fileName}</p>
-                    <p>
-                        <strong>URL:</strong>{" "}
-                        {presignedUrl ? ( 
-                            <a href={presignedUrl} target="_blank" rel="noopener noreferrer">
-                                Download Resume
-                            </a>
-                        ) : (
-                            "Generating link..."
-                        )}
-                    </p>
                 </div>
             )}
         </div>

@@ -2,7 +2,19 @@
 import React, { useState } from "react";
 import Footer from "../components/Footer";
 
+
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+import { useEffect } from "react";
+
+
 export default function ToolsPage() {
+
+     const { status } = useSession();
+     const router = useRouter();
+   
+  
   // Cover letter form state
   const [coverLetterForm, setCoverLetterForm] = useState({
     name: '',
@@ -221,6 +233,21 @@ export default function ToolsPage() {
       setIsAnalyzing(false);
     }
   };
+
+     useEffect(() => {
+   
+       if ( status === "unauthenticated") {
+         router.push("/login");
+       }
+     }, [status, router]);
+   
+     if (status === "loading") {
+       return <div>Loading...</div>;
+     }
+     if (status === "unauthenticated") {
+       return null;
+     }
+   
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#fafbfc' }}>

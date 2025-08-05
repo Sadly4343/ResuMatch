@@ -13,7 +13,11 @@ const s3 = new S3Client({
 });
 
 export const generateSignedUrl = async (bucket: string, key: string, expresInSeconds = 300) => {
+    try {
     const command = new GetObjectCommand({ Bucket: bucket, Key: key});
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: expresInSeconds});
     return signedUrl;
+    } catch (err) {
+        throw new Error("file not found or not availabe in S3 yet");
+    }
 }

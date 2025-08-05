@@ -52,7 +52,7 @@ export default function SignupPage() {
     const passwordReg = /^(?=.*[0-9])(?=.*[!@#$%^&*])/;
 
     if (!passwordReg.test(password)) {
-      setError("Password must atleast one number and special character");
+      setError("Password must contain one number and special character");
       return;
     }
 

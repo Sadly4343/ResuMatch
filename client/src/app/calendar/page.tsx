@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
+
 interface CalendarEvent {
   id: string;
   title: string;
@@ -16,8 +17,12 @@ interface CalendarEvent {
 
 export default function CalendarPage() {
 
-  const { status } = useSession();
-  const router = useRouter();
+     const { status } = useSession();
+       const router = useRouter();
+     
+  
+    
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -56,11 +61,6 @@ export default function CalendarPage() {
     fetchNotificationSettings();
   }, []);
 
-  useEffect(() => {
-    if ( status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
 
   const fetchNotificationSettings = async () => {
     setIsLoadingSettings(true);
@@ -120,13 +120,6 @@ export default function CalendarPage() {
     }
   };
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-  if (status === "unauthenticated") {
-    return null;
-  }
-
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -182,6 +175,21 @@ export default function CalendarPage() {
   const { daysInMonth, startingDay } = getDaysInMonth(currentDate);
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+       useEffect(() => {
+     
+         if ( status === "unauthenticated") {
+           router.push("/login");
+         }
+       }, [status, router]);
+     
+       if (status === "loading") {
+         return <div>Loading...</div>;
+       }
+       if (status === "unauthenticated") {
+         return null;
+       }
+     
+       
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#fafbfc' }}>
       <div style={{ display: 'flex', flex: 1 }}>
