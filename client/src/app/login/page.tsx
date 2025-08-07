@@ -3,32 +3,41 @@ import React, {useState} from "react";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
+
+  // State variables for user input and UI status
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("")
 
+  // Handle Login form submission
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+
+    // Prevents page refresh on login
     e.preventDefault();
     console.log("Login email:", email, "password", password);
     setError("");
 
+    //  Validate password length
     if (password.length < 6) {
       alert("Password must be at least 6 characters");
       return;
     }
     setLoading(true);
     try {
+      // Attempt login from NextAuth credentials provider
       const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
       });
 
+      // Handle login error returned by NextAuth
       if (result?.error) {
         console.error("login error:", error);
         setError(result.error);
       } else {
+        // Alert and Login user and redirect to dashboard
         alert("Account has been logged");
         window.location.href = "/dashboard";
       }

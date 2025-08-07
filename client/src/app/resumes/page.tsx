@@ -12,7 +12,7 @@ import { useRef } from "react";
 import { useEffect } from "react";
 
 
-
+// Interface representing Resume Upload object
 interface UploadResult {
   message: string;
   fileUrl: string;
@@ -22,35 +22,45 @@ interface UploadResult {
 
 export default function ResumesPage() {
 
+
+  // Get current authentication status from NextAuth session
   const { status } = useSession();
+  // Next.js router instance for navigation
   const router = useRouter();
+  // Reference for dialog box for modal controls
   const dialogBox = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
 
+    // If status is unauthenticated redirect to login
     if ( status === "unauthenticated") {
       router.push("/login");
     }
   }, [status, router]);
 
+  // If status is loading return loading in div
   if (status === "loading") {
     return <div>Loading...</div>;
   }
+  // If status is unauthenicated render nothing on page
   if (status === "unauthenticated") {
     return null;
   }
 
 
+  // Handles modal open display on button click
   const handleOpen = () => {
     dialogBox.current?.showModal();
 
   };
 
+  // Handles modal close display on button click
   const handleClose = () => {
     dialogBox.current?.close();
     window.location.reload();
   }
 
+  // Returns succesful upload status return to user
   const handleUploadSuccess = (data: UploadResult) => {
     console.log("uploaded", data);
   }

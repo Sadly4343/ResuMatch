@@ -3,6 +3,8 @@ import React, {useState} from "react";
 import apiService from "../../services/api";
 
 export default function SignupPage() {
+
+  // State variables for user input and UI status
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,60 +16,71 @@ export default function SignupPage() {
     e.preventDefault();
     setError("");
 
+
+    // Trims name and email before server-side validation
     const trimName = name.trim();
     const trimEmail = email.trim();
 
+    // Error if no name 
     if (!trimName) {
       setError("Name is required");
       return;
     }
-
+    // Error if no email
     if (!trimEmail) {
       setError("Email is required");
       return;
     }
-
+    // Email regular expression ensuring proper email 
     const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    //test comparison of email to emailreg
     if (!emailReg.test(trimEmail)) {
       setError("Please enter a valid email");
       return;
     }
-
+    // Checks password exists
     if (!password) {
       setError("Password is required");
       return;
     }
-
+    // Checks both passwords match
     if (password !== confirmPassword) {
       setError("Passwords do not match. Please try again!");
       return;
     }
-
+    // Must be over 8 characters
     if (password.length < 8) {
       setError("Password must be at least 8 characters");
       return;
     }
 
+    // Password regular expression
     const passwordReg = /^(?=.*[0-9])(?=.*[!@#$%^&*])/;
 
+    // Compares password to password Reg ensuring at least one special character and number
     if (!passwordReg.test(password)) {
       setError("Password must contain one number and special character");
       return;
     }
-
+    
     try {
       setLoading(true);
 
+      // Async call to register function with values
       await apiService.register({
         name: trimName,
         email: trimEmail,
         password
       });
 
+
       alert("Account has been created!")
 
+      // Redirect to login page on success
       window.location.href = "/login";
+
+      // If error return error to user
     } catch (error) {
       console.error("Signup error: ", error);
       const errorMessage = error instanceof Error ? error.message : "Registration Failure";
