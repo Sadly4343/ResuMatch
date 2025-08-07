@@ -1,3 +1,8 @@
+/**
+ * Cover Letter Generator API Route - Created by Halle Cooper
+ * Generates personalized cover letters based on user input
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {

@@ -1,3 +1,8 @@
+/**
+ * Resume Analysis API Route - Created by Halle Cooper
+ * Analyzes resume content against job descriptions using keyword matching and AI
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {

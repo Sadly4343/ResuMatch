@@ -1,3 +1,8 @@
+/**
+ * Tools Page - Created by Halle Cooper
+ * AI-powered resume analysis and cover letter generation tools
+ */
+
 "use client";
 import React, { useState } from "react";
 import Footer from "../components/Footer";
