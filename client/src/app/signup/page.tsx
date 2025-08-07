@@ -129,6 +129,7 @@ export default function SignupPage() {
         
         <form onSubmit={handleSignup}> 
           <div style={{ marginBottom: 20 }}>
+            <label htmlFor="name">Name:</label>
             <input 
               type="text" 
               placeholder="Enter your name" 
@@ -138,6 +139,7 @@ export default function SignupPage() {
               style={{ marginBottom: 16 }}
               disabled={loading} 
             />
+            <label htmlFor="email">Email Address:</label>
             <input 
               type="email" 
               placeholder="Enter your email" 
@@ -147,6 +149,7 @@ export default function SignupPage() {
               style={{ marginBottom: 16 }}
               disabled={loading}
             />
+            <label htmlFor="password">Password: </label>
             <input 
               type="password" 
               placeholder="Create a password"
@@ -156,6 +159,7 @@ export default function SignupPage() {
               style={{ marginBottom: 16 }}
               disabled={loading}
             />
+            <label htmlFor="password">Confirm Password: </label>
             <input 
               type="password" 
               placeholder="Confirm your password"

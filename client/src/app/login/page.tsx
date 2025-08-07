@@ -88,6 +88,7 @@ export default function LoginPage() {
         
         <form onSubmit={handleLogin}> 
           <div style={{ marginBottom: 16 }}>
+            <label htmlFor="email">Email</label>
             <input 
               type="email" 
               placeholder="Enter your email." 
@@ -97,6 +98,7 @@ export default function LoginPage() {
               style={{ marginBottom: 12 }}
               disabled={loading}
             />
+            <label htmlFor="password">Password</label>
             <input 
               type="password" 
               placeholder="Input your password."

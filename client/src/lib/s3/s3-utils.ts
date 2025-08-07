@@ -17,7 +17,7 @@ export const generateSignedUrl = async (bucket: string, key: string, expresInSec
     const command = new GetObjectCommand({ Bucket: bucket, Key: key});
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: expresInSeconds});
     return signedUrl;
-    } catch (err) {
+    } catch {
         throw new Error("file not found or not availabe in S3 yet");
     }
 }
