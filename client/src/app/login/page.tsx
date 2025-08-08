@@ -19,8 +19,8 @@ export default function LoginPage() {
     setError("");
 
     //  Validate password length
-    if (password.length < 6) {
-      alert("Password must be at least 6 characters");
+    if (password.length < 8) {
+      alert("Password must be at least 8 characters");
       return;
     }
     setLoading(true);
