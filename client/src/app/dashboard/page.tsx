@@ -5,8 +5,8 @@ import apiService from "../../services/api";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Footer from "../components/Footer";
 
-
-// Define the Application type
+// TypeScript interfaces for type safety
+// Application interface defines the structure of a job application
 interface Application {
   _id: string;
   jobTitle: string;
@@ -24,7 +24,7 @@ interface Application {
   updatedAt: string;
 }
 
-// Define Calendar Event type
+// Calendar Event interface for tracking important dates
 interface CalendarEvent {
   id: string;
   title: string;
@@ -35,53 +35,73 @@ interface CalendarEvent {
   applicationId?: string;
 }
 
+
+// State management for the dashboard component
+// All state variables are properly typed with TypeScript for better development experience
+
 export default function DashboardPage() {
-  // State management with proper typing
+  // Core application state - stores all job applications fetched from the database
   const [applications, setApplications] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
-  const [showCalendarView, setShowCalendarView] = useState(false);
+  
+  // UI state management
+  const [loading, setLoading] = useState(true); // Shows loading spinner while fetching data
+  const [showAddModal, setShowAddModal] = useState(false); // Controls add application modal visibility
+  const [showEditModal, setShowEditModal] = useState(false); // Controls edit application modal visibility
+  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null); // Currently selected app for editing
+  
+  // Filter and search state
+  const [filterStatus, setFilterStatus] = useState('all'); // Filters applications by status (applied, interviewing, etc.)
+  const [searchTerm, setSearchTerm] = useState(''); // Search term for filtering applications
+  
+  // User feedback state
+  const [error, setError] = useState(''); // Displays error messages to users
+  const [successMessage, setSuccessMessage] = useState(''); // Displays success messages to users
+  const [submitting, setSubmitting] = useState(false); // Prevents multiple form submissions
+  
+  // Calendar functionality state
+  const [currentDate, setCurrentDate] = useState(new Date()); // Current month/year for calendar view
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]); // Stores calendar events from applications
+  const [showCalendarView, setShowCalendarView] = useState(false); // Toggles between list and calendar view
   const [calendarLoaded, setCalendarLoaded] = useState(false);
 
+  // NextAuth session management - handles user authentication
   const { status } = useSession();
 
   // Form state for adding/editing applications
+  // This object stores all form field values and is used for both creating and editing applications
   const [formData, setFormData] = useState({
-    jobTitle: '',
-    company: '',
-    status: 'applied',
-    dateApplied: new Date().toISOString().split('T')[0],
-    interviewDate: '',
-    followUpDate: '',
-    deadlineDate: '',
-    jobDescription: '',
-    salary: '',
-    location: '',
-    notes: ''
+    jobTitle: '', // Required field for job title
+    company: '', // Required field for company name
+    status: 'applied', // Default status when creating new application
+    dateApplied: new Date().toISOString().split('T')[0], // Today's date as default
+    interviewDate: '', // Optional interview date
+    followUpDate: '', // Optional follow-up reminder date
+    deadlineDate: '', // Optional application deadline
+    jobDescription: '', // Optional job description for reference
+    salary: '', // Optional salary information
+    location: '', // Optional job location
+    notes: '' // Optional personal notes about the application
   });
 
-  // Load applications on component mount
+  // useEffect hook - runs when component mounts and when authentication status changes
+  // This ensures data is loaded only when user is properly authenticated
   useEffect(() => {
-    // Check if user is authenticated
+    // Wait for authentication status to be determined
     if (status === "loading") return;
+    
+    // Redirect to login if user is not authenticated
     if (status === "unauthenticated") {
       signIn();
       return;
     }
+    
+    // Load user's applications and calendar events once authenticated
     loadApplications();
     loadCalendarEvents();
   }, [status]);
 
-  // Load calendar events from localStorage
+  // Load calendar events from browser's localStorage
+  // This persists calendar events between browser sessions
   const loadCalendarEvents = () => {
     const savedEvents = localStorage.getItem('calendarEvents');
     if (savedEvents) {
@@ -90,88 +110,102 @@ export default function DashboardPage() {
     setCalendarLoaded(true);
   };
 
-  // Save calendar events to localStorage
+  // Auto-save calendar events to localStorage whenever they change
+  // This ensures no data is lost if user refreshes the page
   useEffect(() => {
     if (calendarLoaded) {
       localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents))
     }
   }, [calendarEvents, calendarLoaded]);
 
+  // Fetch user's job applications from the backend API
+  // This function is called when the component mounts and after CRUD operations
   const loadApplications = async () => {
     try {
-      setLoading(true);
+      setLoading(true); // Show loading spinner
       const res = await fetch('/api/applications');
       if (!res.ok) throw new Error("Failed to fetch applications");
       const data = await res.json();
-      setApplications(data);
+      setApplications(data); // Update state with fetched applications
     } catch (error) {
       console.error('Error loading applications:', error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Hide loading spinner
     }
   };
 
-  // Calculate stats
+  // Calculate application statistics for the dashboard cards
+  // These stats help users visualize their job search progress
   const stats = {
-    total: applications.length,
-    applied: applications.filter((app: Application) => app.status === 'applied').length,
-    interviewing: applications.filter((app: Application) => app.status === 'interviewing').length,
-    offered: applications.filter((app: Application) => app.status === 'offered').length,
-    rejected: applications.filter((app: Application) => app.status === 'rejected').length
+    total: applications.length, // Total number of applications
+    applied: applications.filter((app: Application) => app.status === 'applied').length, // Applications submitted
+    interviewing: applications.filter((app: Application) => app.status === 'interviewing').length, // In interview process
+    offered: applications.filter((app: Application) => app.status === 'offered').length, // Job offers received
+    rejected: applications.filter((app: Application) => app.status === 'rejected').length // Applications rejected
   };
 
-  // Filter applications based on search and status
+  // Filter applications based on search term and status filter
+  // This provides real-time filtering as user types or changes status filter
   const filteredApplications = applications.filter((app: Application) => {
+    // Check if application matches search term (job title or company name)
     const matchesSearch = app.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          app.company.toLowerCase().includes(searchTerm.toLowerCase());
+    // Check if application matches selected status filter
     const matchesStatus = filterStatus === 'all' || app.status === filterStatus;
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus; // Both conditions must be true
   });
 
-  // Handle form submission
+  // Handle form submission for both creating and editing applications
+  // This function handles the complete CRUD operation flow
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setError('');
-    setSuccessMessage('');
+    e.preventDefault(); // Prevent default form submission
+    setSubmitting(true); // Show loading state
+    setError(''); // Clear any previous errors
+    setSuccessMessage(''); // Clear any previous success messages
     
     try {
       let applicationId: string;
       
+      // Determine if we're editing existing application or creating new one
       if (showEditModal && selectedApplication) {
+        // Update existing application
         await apiService.updateApplication(selectedApplication._id, formData);
         applicationId = selectedApplication._id;
       } else {
+        // Create new application
         const newApplication = await apiService.createApplication(formData);
         applicationId = newApplication._id;
       }
       
-      // Create calendar events for important dates
+      // Create calendar events for any important dates in the application
       await createCalendarEvents(applicationId);
       
+      // Reset UI state after successful operation
       setShowAddModal(false);
       setShowEditModal(false);
       setSelectedApplication(null);
       resetForm();
-      loadApplications();
+      loadApplications(); // Refresh the applications list
       setSuccessMessage('Application saved successfully!');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      setTimeout(() => setSuccessMessage(''), 3000); // Auto-hide success message
     } catch (error) {
       console.error('Error saving application:', error);
       setError('Failed to save application. Please try again.');
-      setTimeout(() => setError(''), 3000);
+      setTimeout(() => setError(''), 3000); // Auto-hide error message
     } finally {
-      setSubmitting(false);
+      setSubmitting(false); // Hide loading state
     }
   };
 
-  // Create calendar events for application dates
+  // Create calendar events for important dates in job applications
+  // This automatically adds events to the calendar when dates are set
   const createCalendarEvents = async (applicationId: string) => {
     const events: CalendarEvent[] = [];
     
+    // Create interview event if interview date is set
     if (formData.interviewDate) {
       events.push({
-        id: `interview-${applicationId}-${Date.now()}`,
+        id: `interview-${applicationId}-${Date.now()}`, // Unique ID for the event
         title: `Interview: ${formData.jobTitle} at ${formData.company}`,
         date: formData.interviewDate,
         type: 'interview',
@@ -180,6 +214,7 @@ export default function DashboardPage() {
       });
     }
     
+    // Create follow-up event if follow-up date is set
     if (formData.followUpDate) {
       events.push({
         id: `followup-${applicationId}-${Date.now()}`,
@@ -191,6 +226,7 @@ export default function DashboardPage() {
       });
     }
     
+    // Create deadline event if deadline date is set
     if (formData.deadlineDate) {
       events.push({
         id: `deadline-${applicationId}-${Date.now()}`,
@@ -202,34 +238,37 @@ export default function DashboardPage() {
       });
     }
     
+    // Add new events to existing calendar events
     setCalendarEvents((prev: CalendarEvent[]) => [...prev, ...events]);
   };
 
-  // Handle delete
+  // Handle application deletion with user confirmation
+  // This prevents accidental deletions and provides user feedback
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this application?')) {
       try {
-        await apiService.deleteApplication(id);
-        loadApplications();
+        await apiService.deleteApplication(id); // Delete from backend
+        loadApplications(); // Refresh the applications list
         setSuccessMessage('Application deleted successfully!');
-        setTimeout(() => setSuccessMessage(''), 3000);
+        setTimeout(() => setSuccessMessage(''), 3000); // Auto-hide success message
       } catch (error) {
         console.error('Error deleting application:', error);
         setError('Failed to delete application. Please try again.');
-        setTimeout(() => setError(''), 3000);
+        setTimeout(() => setError(''), 3000); // Auto-hide error message
       }
     }
   };
 
-  // Handle edit
+  // Handle application editing - populate form with existing data
+  // This function prepares the edit modal with the selected application's data
   const handleEdit = (application: Application) => {
-    setSelectedApplication(application);
+    setSelectedApplication(application); // Store the application being edited
     setFormData({
       jobTitle: application.jobTitle,
       company: application.company,
       status: application.status,
       dateApplied: application.dateApplied,
-      interviewDate: application.interviewDate || '',
+      interviewDate: application.interviewDate || '', // Use empty string if no date
       followUpDate: application.followUpDate || '',
       deadlineDate: application.deadlineDate || '',
       jobDescription: application.jobDescription || '',
@@ -237,16 +276,17 @@ export default function DashboardPage() {
       location: application.location || '',
       notes: application.notes || ''
     });
-    setShowEditModal(true);
+    setShowEditModal(true); // Show the edit modal
   };
 
-  // Reset form
+  // Reset form to default values
+  // This is called after successful form submission or when canceling
   const resetForm = () => {
     setFormData({
       jobTitle: '',
       company: '',
-      status: 'applied',
-      dateApplied: new Date().toISOString().split('T')[0],
+      status: 'applied', // Default status for new applications
+      dateApplied: new Date().toISOString().split('T')[0], // Today's date
       interviewDate: '',
       followUpDate: '',
       deadlineDate: '',
@@ -257,45 +297,56 @@ export default function DashboardPage() {
     });
   };
 
-  // Get status color with better contrast
+  // Get color scheme for application status badges
+  // This provides visual distinction between different application statuses
   const getStatusColor = (status: string): { background: string; color: string; border: string } => {
     switch (status) {
-      case 'applied': return { background: '#e3f2fd', color: '#1976d2', border: '1px solid #bbdefb' };
-      case 'interviewing': return { background: '#fff3e0', color: '#f57c00', border: '1px solid #ffcc02' };
-      case 'offered': return { background: '#e8f5e8', color: '#388e3c', border: '1px solid #c8e6c9' };
-      case 'rejected': return { background: '#ffebee', color: '#d32f2f', border: '1px solid #ffcdd2' };
-      default: return { background: '#f5f5f5', color: '#424242', border: '1px solid #e0e0e0' };
+      case 'applied': return { background: '#e3f2fd', color: '#1976d2', border: '1px solid #bbdefb' }; // Blue for applied
+      case 'interviewing': return { background: '#fff3e0', color: '#f57c00', border: '1px solid #ffcc02' }; // Orange for interviewing
+      case 'offered': return { background: '#e8f5e8', color: '#388e3c', border: '1px solid #c8e6c9' }; // Green for offered
+      case 'rejected': return { background: '#ffebee', color: '#d32f2f', border: '1px solid #ffcdd2' }; // Red for rejected
+      default: return { background: '#f5f5f5', color: '#424242', border: '1px solid #e0e0e0' }; // Gray for unknown status
     }
   };
 
-  // Calendar functions
+  // Calendar utility functions for rendering the calendar view
+  // These functions handle calendar calculations and event display
+  
+  // Calculate the number of days in a month and which day the month starts on
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDay = firstDay.getDay();
+    const firstDay = new Date(year, month, 1); // First day of the month
+    const lastDay = new Date(year, month + 1, 0); // Last day of the month
+    const daysInMonth = lastDay.getDate(); // Total days in the month
+    const startingDay = firstDay.getDay(); // Day of week the month starts on (0 = Sunday)
     return { daysInMonth, startingDay };
   };
 
+  // Get all calendar events for a specific date
+  // This is used to display event indicators on calendar days
   const getEventsForDate = (date: number) => {
     const dateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
     return calendarEvents.filter((event: CalendarEvent) => event.date === dateString);
   };
 
+  // Get color for different types of calendar events
+  // This provides visual distinction between interviews, deadlines, and follow-ups
   const getEventColor = (type: CalendarEvent['type']): string => {
     switch (type) {
-      case 'interview': return '#2196f3';
-      case 'deadline': return '#e53935';
-      case 'follow-up': return '#ff9800';
-      default: return '#388e3c';
+      case 'interview': return '#2196f3'; // Blue for interviews
+      case 'deadline': return '#e53935'; // Red for deadlines
+      case 'follow-up': return '#ff9800'; // Orange for follow-ups
+      default: return '#388e3c'; // Green for other events
     }
   };
 
+  // Calendar display constants
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const { daysInMonth, startingDay } = getDaysInMonth(currentDate);
 
+  // Loading state - shows spinner while fetching data from the server
+  // This provides user feedback during API calls
   if (loading) {
     return (
       <div style={{ display: 'flex', minHeight: '80vh', background: '#fafbfc', alignItems: 'center', justifyContent: 'center' }}>
@@ -306,7 +357,7 @@ export default function DashboardPage() {
             border: '4px solid #e3f2fd', 
             borderTop: '4px solid #2196f3', 
             borderRadius: '50%', 
-            animation: 'spin 1s linear infinite',
+            animation: 'spin 1s linear infinite', // CSS animation for spinning effect
             margin: '0 auto'
           }}></div>
           <p style={{ marginTop: '16px', color: '#666', fontWeight: 500 }}>Loading applications...</p>
@@ -315,10 +366,12 @@ export default function DashboardPage() {
     );
   }
 
+  // Main dashboard layout with sidebar navigation and content area
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#fafbfc' }}>
       <div style={{ display: 'flex', flex: 1 }}>
-        {/* Sidebar */}
+        {/* Sidebar Navigation */}
+        {/* Contains app logo, navigation links, and logout button */}
         <aside style={{ width: 220, background: '#fff', borderRight: '1px solid #eee', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: 24 }}>
           <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 32 }}>ResuMatch</div>
           <nav style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
