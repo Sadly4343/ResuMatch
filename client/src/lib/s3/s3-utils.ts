@@ -1,7 +1,7 @@
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 
-
+// Call to S3 Bucket Setup
 const s3 = new S3Client({
     region: process.env.AWS_REGION!,
     credentials: {
@@ -12,6 +12,7 @@ const s3 = new S3Client({
 
 });
 
+// Used to generate signed URL for storage and retrieval from bucket
 export const generateSignedUrl = async (bucket: string, key: string, expresInSeconds = 300) => {
     try {
     const command = new GetObjectCommand({ Bucket: bucket, Key: key});
