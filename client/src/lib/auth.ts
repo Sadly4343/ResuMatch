@@ -8,7 +8,7 @@ interface DecodedToken {
         name: string;
     };
 }
-
+// Authenticate route 
 export async function authenticate(req: NextRequest) {
   
     const cookieToken = req.cookies.get("next-auth.session-token")?.value;

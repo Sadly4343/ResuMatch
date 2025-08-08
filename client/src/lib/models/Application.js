@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Schema for application for Mongoose Database
 const applicationSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,

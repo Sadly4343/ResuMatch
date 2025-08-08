@@ -13,8 +13,10 @@ interface IUserWithMethods  extends Document {
     comparePassword: (input: string) => Promise<boolean>;
 }
 
+// Creates options with authorization for various calls
 const authOptions = {
     providers: [
+        // Attaches the credentials and password and email
         CredentialsProvider({
             name: "Credentials",
             credentials: {
@@ -24,13 +26,16 @@ const authOptions = {
             async authorize(credentials) {
                 await connectDB();
 
+                // Attaches them to values
                 const email = credentials?.email?.trim() || "";
                 const password = credentials?.password?.trim() || "";
-
+                
+                // If no email or password throw error
                 if (!email || !password) {
                     throw new Error("Email and password required");
                 }
 
+                // Regular express to compare validation for email and Passwords
                 const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
                 if (!emailReg.test(email)) {
@@ -50,7 +55,7 @@ const authOptions = {
 
 
                 
-
+                 // Calls find one function to find with matching email user
                 const user = await User.findOne({ email: credentials?.email }) as IUserWithMethods;
                 console.log("user found", user);
                 if (!user || !credentials?.password) return null;
