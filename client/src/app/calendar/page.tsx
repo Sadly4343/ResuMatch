@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Footer from "../components/Footer";
+import Footer from "../components/Footer"; // Footer imported by Halle Cooper
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

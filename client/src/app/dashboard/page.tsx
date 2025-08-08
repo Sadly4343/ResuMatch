@@ -3,7 +3,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import apiService from "../../services/api";
 import { useSession, signIn, signOut } from "next-auth/react";
-import Footer from "../components/Footer";
+import Footer from "../components/Footer"; // Footer imported by Halle Cooper
 
 // TypeScript interfaces for type safety
 // Application interface defines the structure of a job application

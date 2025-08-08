@@ -3,7 +3,7 @@ import React from "react";
 
 import ResumeUploader from "../components/resumeUploader";
 import ResumeList from "../components/resumeRetrieval";
-import Footer from "../components/Footer";
+import Footer from "../components/Footer"; // Footer imported by Halle Cooper
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

@@ -5,7 +5,7 @@
 
 "use client";
 import React, { useState } from "react";
-import Footer from "../components/Footer";
+import Footer from "../components/Footer"; // Footer imported by Halle Cooper
 
 
 import { useSession } from "next-auth/react";
